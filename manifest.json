@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Загрузчик музыки из Youtube в VK",
+  "description": "Позволяет вам загрузить музыку из Youtube и сохранять во Вконтакте.",
+  "version": "1.0",
+  "author": "foldersjarer@gmail.com",
+  "action": {
+    "default_icon": "images/icon_disabled.png",
+    "default_popup": "popup/popup.html"
+  },
+  "background" : {
+    "service_worker": "background.js"
+  },
+  "permissions": ["storage", "activeTab", "scripting", "tabs", "alarms", "notifications", "tabs", "webNavigation"]
+}
