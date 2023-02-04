@@ -1,21 +1,25 @@
-const youtubeVideoUrl = "https://www.youtube.com/watch?";
-const icons = {
-    "active": "../images/icon_active.png",
-    "disabled": "../images/icon_disabled.png",
-};
+import CONFIG from "./scripts/config.js";
 
-// Toggle icon type when video detected
-chrome.tabs.onUpdated.addListener(function() {
-    chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
-        toggleIcon(tabs[0]);
-    });
+import {
+    generateNotification,
+    handleAuthTokenPage,
+    toggleIcon,
+} from "./scripts/utils.js";
+
+chrome.runtime.onInstalled.addListener((details) => {
+    if (details?.reason === "install") {
+        generateNotification("Спасибо за установку!");
+    }
 });
 
-function toggleIcon(currentTab) {
-    let iconType = currentTab.url.includes(youtubeVideoUrl) ? icons.active : icons.disabled;
+chrome.runtime.onMessage.addListener((request) => {
+    if (request.type === "login") {
+        chrome.tabs.create({
+            url: CONFIG.oauthUrl,
+            active: true,
+        });
+    }
+});
 
-    chrome.action.setIcon({
-        path: iconType,
-        tabId: currentTab.id,
-    });
-}
+chrome.webNavigation.onHistoryStateUpdated.addListener(toggleIcon);
+chrome.webNavigation.onBeforeNavigate.addListener(handleAuthTokenPage);

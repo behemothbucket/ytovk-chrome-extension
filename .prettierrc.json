@@ -1,6 +1,8 @@
 {
-  "trailingComma": "es5",
-  "tabWidth": 4,
-  "semi": true,
-  "doubleQuote": true
+    "trailingComma": "es5",
+    "tabWidth": 4,
+    "semi": true,
+    "doubleQuote": true,
+    "bracketSpacing": true,
+    "max_line_length": 80
 }

@@ -1,0 +1,1 @@
+https://oauth.vk.com/blank.html#access_token=vk1.a.QbcbMSAPC1nLVg5mfkDjKnvUrNqxs35fLqR0Kup6RGNQ34Pj_k3vcWZuSInHMFXxmC--HjV4gweKgalvZ_I747Vl2TvWydL9psD5ZL9MF0GHBPRB9K5HZCTHVA1Jmqx94L9QZtF7A2g-7MpOENaM5OGfyF2ph7I6M5v3PzIskZV70_st9GkO7b15IXTua-Bwq48WQ03L_1VsJP1Vo7Xk8Q&expires_in=0&user_id=733830781
