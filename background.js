@@ -1,9 +1,7 @@
-import CONFIG from "./scripts/config.js";
-
 import {
     generateNotification,
-    handleAuthTokenPage,
-    toggleIcon,
+    handleMessage,
+    handleUrls,
 } from "./scripts/utils.js";
 
 chrome.runtime.onInstalled.addListener((details) => {
@@ -12,14 +10,8 @@ chrome.runtime.onInstalled.addListener((details) => {
     }
 });
 
-chrome.runtime.onMessage.addListener((request) => {
-    if (request.type === "login") {
-        chrome.tabs.create({
-            url: CONFIG.oauthUrl,
-            active: true,
-        });
-    }
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.url) handleUrls(tabId, tab);
 });
 
-chrome.webNavigation.onHistoryStateUpdated.addListener(toggleIcon);
-chrome.webNavigation.onBeforeNavigate.addListener(handleAuthTokenPage);
+chrome.runtime.onMessage.addListener(handleMessage);
