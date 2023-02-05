@@ -1,0 +1,10 @@
+{
+    "name": {
+        "message": "YToVK",
+        "description": "extension name"
+    },
+    "description": {
+        "message": "Загружет видео из Youtube и сохраняет в аудиозаписях ВКонтакте",
+        "description": "extension description"
+    }
+}

@@ -2,27 +2,29 @@ import CONFIG from "./config.js";
 
 async function handleUrls(tabId, tab) {
     if ((tab.url).match(CONFIG.OAUTH_TOKEN_PAGE_PATTERN)) {
-        await chrome.tabs.remove(tabId);
+        await chrome.action.setIcon({
+            path: "img/icon_active.png",
+        });
         generateNotification("Привязка аккаунта произошла успешно", 2500);
+        await chrome.tabs.remove(tabId);
         return;
     }
 
     if ((tab.url).match(CONFIG.YOUTUBE_VIDEO_PAGE_PATTERN)) {
-        await chrome.action.setIcon({
-            path: "img/icon_active.png",
+        await chrome.action.setBadgeText({
+            text: "1",
             tabId: tabId,
         });
     } else {
-        await chrome.action.setIcon({
-            path: "img/icon_disabled.png",
+        await chrome.action.setBadgeText({
+            text: "",
             tabId: tabId,
         });
     }
 }
 
 function generateNotification(text, delay = 1500) {
-    chrome.notifications.create("",
-        {
+    chrome.notifications.create("", {
             type: "basic",
             iconUrl: "img/icon_active.png",
             title: "YToVK",
@@ -43,7 +45,6 @@ async function handleMessage(request) {
             active: true,
         });
     }
-
 }
 
 
