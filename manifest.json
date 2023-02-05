@@ -19,15 +19,8 @@
         "type": "module"
     },
     "permissions": [
-        "activeTab",
-        "scripting",
         "notifications",
-        "contextMenus",
-        "tabs",
-        "storage",
-        "webNavigation",
-        "declarativeContent",
-        "identity"
+        "tabs"
     ],
     "host_permissions": [
         "https://*/*"

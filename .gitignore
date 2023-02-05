@@ -1,3 +1,5 @@
+# Node folder
 node_modules
 
+# auth token
 oauth.txt
