@@ -2,13 +2,43 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet"
+          href="../img/font-awesome-4.7.0/css/font-awesome.min.css">
     <meta charset="UTF-8">
     <title>YtoVK</title>
 </head>
 <body>
-<label>
-    <button>Войти в ВК</button>
-</label>
+<div class="wrapper">
+    <div class="form">
+        <div class="input_field">
+            <label for="URL">URL</label>
+            <input type="text" class="input" id="URL">
+        </div>
+        <div class="input_field">
+            <label for="Title">Название</label>
+            <input type="text" class="input" id="Title">
+        </div>
+        <div class="input_field">
+            <label for="Artist">Испонитель</label>
+            <input type="text" class="input" id="Artist">
+        </div>
+        <div class="form_buttons_inline_block">
+            <div class="form_buttons_bar">
+                <button class="buttons button_download" type="submit">
+                    Скачать
+                </button>
+                <button class="button button_clear" type="button">
+                    Очистить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="button_login_container">
+    <button class="button button_login" type="button">
+        <i class="fa fa-vk" aria-hidden="true" style="font-size: 24px;"></i>&nbsp;Войти
+    </button>
+</div>
 </body>
 <script src="popup.js" type="module"></script>
 </html>
