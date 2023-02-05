@@ -17,10 +17,8 @@
         "url": "https://github.com/1option/ytovk-chrome-extension/issues"
     },
     "homepage": "https://github.com/1option/ytovk-chrome-extension#readme",
-    "dependencies": {
-        "chrome-types": "^0.1.170"
-    },
     "devDependencies": {
+        "chrome-types": "^0.1.170",
         "eslint": "^8.33.0"
     }
 }

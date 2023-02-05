@@ -10,8 +10,8 @@ chrome.runtime.onInstalled.addListener((details) => {
     }
 });
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.url) handleUrls(tabId, tab);
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+    if (changeInfo.url) await handleUrls(tabId, tab);
 });
 
 chrome.runtime.onMessage.addListener(handleMessage);
