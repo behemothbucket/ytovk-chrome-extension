@@ -20,7 +20,7 @@ buttonDownload.addEventListener("click", () => {
 		if (!!input.value) {
 			totalValidInputs++;
 		} else {
-			input.style.borderColor = "hsl(358, 68%, 59%)";
+			input.style.borderColor = "#cf222e";
 			input.classList.add("invalid");
 			input.nextElementSibling.style.zIndex = "0";
 		}
