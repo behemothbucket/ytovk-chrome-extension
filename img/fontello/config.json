@@ -17,6 +17,12 @@
       "css": "info-circled",
       "code": 59392,
       "src": "fontawesome"
+    },
+    {
+      "uid": "f4445feb55521283572ee88bc304f928",
+      "css": "floppy",
+      "code": 59393,
+      "src": "fontawesome"
     }
   ]
 }
