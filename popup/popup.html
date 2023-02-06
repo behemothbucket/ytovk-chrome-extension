@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta charset="utf-8">
     <link rel="stylesheet" href="popup.css">
     <link rel="stylesheet" href="../img/fontello/css/fontello.css" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <title>YtoVK</title>
 </head>
 <body>
@@ -11,29 +12,28 @@
     <div class="form">
         <div class="input_field">
             <label for="URL">URL</label>
-            <input type="text" class="input" id="URL">
+            <input type="text" class="input" id="URL" autocomplete="off">
+            <span class="icon-info-circled"></span>
         </div>
         <div class="input_field">
             <label for="Title">Название</label>
-            <input type="text" class="input" id="Title">
+            <input type="text" class="input" id="Title" autocomplete="off">
+            <span class="icon-info-circled"></span>
         </div>
         <div class="input_field">
             <label for="Artist">Испонитель</label>
-            <input type="text" class="input" id="Artist">
+            <input type="text" class="input" id="Artist" autocomplete="off">
+            <span class="icon-info-circled"></span>
         </div>
-        <div class="form_buttons_inline_block">
-            <div class="form_buttons_bar">
-                <button class="buttons button_download" type="submit">
-                    Скачать
-                </button>
-                <button class="button button_clear" type="button">
-                    Очистить
-                </button>
-            </div>
+        <div class="form_buttons">
+            <button class="button button_download" type="submit">
+                Скачать
+            </button>
+            <button class="button button_clear" type="button">
+                Очистить
+            </button>
         </div>
     </div>
-</div>
-<div class="button_login_container">
     <button class="button button_login" type="button">
         <i class="icon-vkontakte" aria-hidden="true" style="font-size: 24px;"></i>Войти
     </button>
