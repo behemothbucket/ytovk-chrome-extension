@@ -21,9 +21,21 @@
     },
     "permissions": [
         "notifications",
-        "tabs"
+        "tabs",
+        "webNavigation",
+        "scripting"
     ],
     "host_permissions": [
-        "https://*/*"
+        "<all_urls>"
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "content.css"
+            ],
+            "matches": [
+                "*://*.youtube.com/*"
+            ]
+        }
     ]
 }
