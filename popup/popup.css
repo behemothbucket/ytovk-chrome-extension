@@ -75,7 +75,7 @@ body {
     background-color: #2865c7;
 }
 
-.button_login:focus {
+.button_login:focus-visible {
     border-color: #7f9dce;
     outline: 0;
 }
@@ -95,7 +95,7 @@ body {
     background-color: hsla(137, 55%, 36%, 1);
 }
 
-.button_download:focus {
+.button_download:focus-visible {
     border: 1px solid #0969da;
     outline: 0;
 }
@@ -106,21 +106,21 @@ body {
     border-color: rgba(27, 31, 36, 0.15);
 }
 
-.button_clear:hover:not(:disabled) {
+.button_clear:hover {
     color: #fff;
     background-color: #a40e26;
     border-color: rgba(27, 31, 36, 0.15);
     box-shadow: inset 0 1px 0 rgba(76, 0, 20, 0.2);
 }
 
-.button_clear:active:not(:disabled),
+.button_clear:active,
 .active {
     background-color: hsla(356, 72%, 44%, 1);
     border-color: rgba(27, 31, 36, 0.15);
     box-shadow: inset 0 1px 0 rgba(76, 0, 20, 0.2);
 }
 
-.button_clear:focus {
+.button_clear:focus-visible {
     border: 1px solid #0969da;
     outline: 0;
 }

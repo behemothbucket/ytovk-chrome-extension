@@ -26,7 +26,7 @@ buttonDownload.addEventListener("click", () => {
 		}
 	}
 
-	if (totalValidInputs === 3) alert("OK");
+	if (totalValidInputs === 3) alert("Вы не вошли в аккаунт");
 
 });
 
