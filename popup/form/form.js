@@ -1,12 +1,8 @@
-import Config from "../scripts/config.js";
+import { Config } from "../../scripts/config.js";
 
-let authButton = document.querySelector(".button_login");
-let buttonClear = document.querySelector(".button_clear");
-let buttonDownload = document.querySelector(".button_download");
-let inputs = document.querySelectorAll(".input");
-let errorIcons = document.querySelectorAll(".icon-info-circled");
 let inputURL = document.getElementById("URL");
 let labelUrlInput = document.getElementById("url_label");
+let labelTitle = document.getElementById("title_label");
 
 chrome.tabs.query({
 	active: true,
@@ -21,10 +17,16 @@ chrome.tabs.query({
 			inputURL.focus();
 		}, 200);
 		setTimeout(() => {
-			document.getElementById("title_label").focus();
+			labelTitle.focus();
 		}, 600);
 	}
 });
+
+let wrapperForm = document.querySelector(".wrapper");
+let buttonClear = document.querySelector(".button_clear");
+let buttonDownload = document.querySelector(".button_download");
+let inputs = document.querySelectorAll(".input");
+let errorIcons = document.querySelectorAll(".icon-info-circled");
 
 buttonClear.addEventListener("click", () => {
 	for (const input of inputs) {
@@ -80,6 +82,3 @@ window.addEventListener("keypress", (event) => {
 	}
 });
 
-authButton.addEventListener("click", () => {
-	chrome.runtime.sendMessage({ type: "login" });
-});

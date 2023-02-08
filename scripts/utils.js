@@ -1,4 +1,4 @@
-import Config from "./config.js";
+import { Config } from "./config.js";
 import { saveToken } from "./storage.js";
 
 function handleUrls(tabId, changeInfo, tab) {
@@ -6,6 +6,7 @@ function handleUrls(tabId, changeInfo, tab) {
 		saveToken(tab.url);
 		generateNotification("Привязка аккаунта произошла успешно", 2500);
 		chrome.tabs.remove(tabId);
+		return true;
 	}
 }
 
@@ -42,6 +43,7 @@ function handleMessage(request, sender, sendResponse) {
 			tabId: sender.tab.id,
 		});
 	}
+	return true;
 }
 
 export {
