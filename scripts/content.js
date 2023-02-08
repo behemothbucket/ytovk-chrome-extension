@@ -9,7 +9,11 @@
 	});
 })();
 
+
 function attachVKButton() {
+
+	chrome.runtime.sendMessage({ type: "setBadge" });
+
 	if (document.querySelector("#shadow")) return;
 
 	const ownerDiv = document.querySelector("div#owner");

@@ -1,7 +1,7 @@
 import {
 	generateNotification,
 	handleMessage,
-	handleTokenUrl,
+	handleUrls,
 } from "./scripts/utils.js";
 
 chrome.runtime.onInstalled.addListener((details) => {
@@ -11,6 +11,6 @@ chrome.runtime.onInstalled.addListener((details) => {
 	}
 });
 
-chrome.tabs.onUpdated.addListener(handleTokenUrl);
+chrome.tabs.onUpdated.addListener(handleUrls);
 
 chrome.runtime.onMessage.addListener(handleMessage);

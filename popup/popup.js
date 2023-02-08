@@ -1,11 +1,30 @@
+import Config from "../scripts/config.js";
+
 let authButton = document.querySelector(".button_login");
 let buttonClear = document.querySelector(".button_clear");
 let buttonDownload = document.querySelector(".button_download");
 let inputs = document.querySelectorAll(".input");
 let errorIcons = document.querySelectorAll(".icon-info-circled");
 let inputURL = document.getElementById("URL");
+let labelUrlInput = document.getElementById("url_label");
 
-inputURL.value = window.location.href;
+chrome.tabs.query({
+	active: true,
+	currentWindow: true,
+}, (tabs) => {
+	if (tabs[0].url?.match(Config.YOUTUBE_VIDEO_PAGE_PATTERN)) {
+		inputURL.value = tabs[0].url;
+		labelUrlInput.innerHTML = `<button class="yt_label button" tabindex="-1">
+<i class="icon-youtube-play" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;YouTube</button>`;
+		setTimeout(() => {
+			inputURL.setSelectionRange(0, 0);
+			inputURL.focus();
+		}, 200);
+		setTimeout(() => {
+			document.getElementById("title_label").focus();
+		}, 600);
+	}
+});
 
 buttonClear.addEventListener("click", () => {
 	for (const input of inputs) {
@@ -50,7 +69,6 @@ inputs.forEach(input => {
 		input.nextElementSibling.style.zIndex = "-1";
 	});
 });
-
 
 window.addEventListener("keypress", (event) => {
 	if (event.key === "Enter") {

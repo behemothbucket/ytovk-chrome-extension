@@ -13,14 +13,15 @@
     },
     "action": {
         "default_icon": "img/icon_disabled.png",
-        "default_popup": "popup/popup.html"
+        "default_popup": "popup/popup.html",
+        "default_title": "Zzz... 🐝"
     },
     "content_scripts": [
         {
             "matches": [
                 "https://*.youtube.com/*"
             ],
-            "run_at": "document_end",
+            "run_at": "document_idle",
             "js": [
                 "scripts/content.js"
             ]
@@ -33,8 +34,7 @@
     "permissions": [
         "notifications",
         "tabs",
-        "scripting",
-        "history"
+        "storage"
     ],
     "host_permissions": [
         "<all_urls>"
