@@ -1,15 +1,13 @@
 import CONFIG from "./config.js";
 
-async function handleUrls(tabId, tab) {
-	if ((tab.url).match(CONFIG.OAUTH_TOKEN_PAGE_PATTERN)) {
-		await chrome.action.setIcon({
+function handleTokenUrl(tabId, changeInfo, tab) {
+	if ((tab.url).match(CONFIG.OAUTH_TOKEN_PAGE_PATTERN) && changeInfo.url) {
+		chrome.action.setIcon({
 			path: "img/icon_active.png",
 		});
 		generateNotification("Привязка аккаунта произошла успешно", 2500);
-		await chrome.tabs.remove(tabId);
-		return;
+		chrome.tabs.remove(tabId);
 	}
-
 }
 
 function generateNotification(text, delay = 1500) {
@@ -27,9 +25,9 @@ function generateNotification(text, delay = 1500) {
 	);
 }
 
-async function handleMessage(request) {
+function handleMessage(request) {
 	if (request.type === "login") {
-		await chrome.tabs.create({
+		chrome.tabs.create({
 			url: CONFIG.OAUTH_URL,
 			active: true,
 		});
@@ -40,5 +38,5 @@ async function handleMessage(request) {
 export {
 	generateNotification,
 	handleMessage,
-	handleUrls,
+	handleTokenUrl,
 };

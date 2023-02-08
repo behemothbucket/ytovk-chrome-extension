@@ -3,6 +3,9 @@ let buttonClear = document.querySelector(".button_clear");
 let buttonDownload = document.querySelector(".button_download");
 let inputs = document.querySelectorAll(".input");
 let errorIcons = document.querySelectorAll(".icon-info-circled");
+let inputURL = document.getElementById("URL");
+
+inputURL.value = window.location.href;
 
 buttonClear.addEventListener("click", () => {
 	for (const input of inputs) {
@@ -60,7 +63,5 @@ window.addEventListener("keypress", (event) => {
 });
 
 authButton.addEventListener("click", () => {
-	// chrome.runtime.sendMessage({ type: "login" });
-	alert("Пока что отключил...");
+	chrome.runtime.sendMessage({ type: "login" });
 });
-

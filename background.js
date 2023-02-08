@@ -1,32 +1,16 @@
 import {
 	generateNotification,
 	handleMessage,
-	handleUrls,
+	handleTokenUrl,
 } from "./scripts/utils.js";
 
 chrome.runtime.onInstalled.addListener((details) => {
+	//TODO Сделать проверку
 	if (details?.reason === "install") {
 		generateNotification("Спасибо за установку!");
 	}
 });
 
-
-chrome.webNavigation.onHistoryStateUpdated.addListener(showSaveToVkButton, {
-	url:
-		[
-			{ hostContains: "youtube.com" },
-		],
-});
-
-function showSaveToVkButton(details) {
-	chrome.scripting.executeScript({
-		target: { tabId: details.tabId },
-		files: ["content.js"],
-	});
-}
-
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-	if (changeInfo.url) await handleUrls(tabId, tab);
-});
+chrome.tabs.onUpdated.addListener(handleTokenUrl);
 
 chrome.runtime.onMessage.addListener(handleMessage);
