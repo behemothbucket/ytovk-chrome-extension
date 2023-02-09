@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="playlist.css">
+    <link rel="stylesheet" href="../../img/fontello/css/fontello.css" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <title>Playlist</title>
+    <script
+        type="text/javascript"
+        src="openApiPlaylist.js"
+        charset="windows-1251"
+    ></script>
+</head>
+<body>
+<div class="wrapper">
+    <div class="form">
+        <div class="input_field">
+            <label for="URL-playlist" id="url_label">URL</label>
+            <input type="text" class="input" id="URL-playlist" autocomplete="off">
+            <span class="icon-info-circled"></span>
+        </div>
+        <div class="form_buttons">
+            <button class="button button_back">Back</button>
+            <span class="error_message">Incorrect url</span>
+            <button class="button button_load">Load</button>
+        </div>
+    </div>
+</div>
+<div id="vk_playlist"></div>
+</body>
+<script type="module" src="playlist.js">
+</script>
+</html>

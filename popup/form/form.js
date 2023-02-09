@@ -1,4 +1,5 @@
 import { Config } from "../../scripts/config.js";
+import { getToken } from "../../scripts/storage.js";
 
 let inputURL = document.getElementById("URL");
 let labelUrlInput = document.getElementById("url_label");
@@ -22,11 +23,11 @@ chrome.tabs.query({
 	}
 });
 
-let wrapperForm = document.querySelector(".wrapper");
 let buttonClear = document.querySelector(".button_clear");
 let buttonDownload = document.querySelector(".button_download");
 let inputs = document.querySelectorAll(".input");
 let errorIcons = document.querySelectorAll(".icon-info-circled");
+let playlist = document.querySelector(".vk_playlist_button");
 
 buttonClear.addEventListener("click", () => {
 	for (const input of inputs) {
@@ -49,9 +50,7 @@ buttonDownload.addEventListener("click", () => {
 			input.nextElementSibling.style.zIndex = "0";
 		}
 	}
-
 	if (totalValidInputs === 3) alert("Вы не вошли в аккаунт");
-
 });
 
 function disableErrorIcons() {
@@ -61,10 +60,13 @@ function disableErrorIcons() {
 }
 
 inputs.forEach(input => {
-	input.addEventListener("change", () => {
+	input.addEventListener("input", () => {
 		if (!!input.value) {
 			input.style.borderColor = "#d1d5da";
 			input.classList.remove("invalid");
+		} else {
+			input.style.borderColor = "#cf222e";
+			input.classList.add("invalid");
 		}
 	});
 	input.addEventListener("click", () => {
@@ -82,3 +84,20 @@ window.addEventListener("keypress", (event) => {
 	}
 });
 
+inputURL.addEventListener("keyup", () => {
+	if (inputURL.value === "get_token") {
+		getToken();
+		inputURL.value = "";
+	}
+});
+
+playlist.addEventListener("click", () => {
+	let currentUrl = window.location.href;
+	let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
+	let pathPopup = "popup/playlist/playlist.html";
+	window.location.href = rawPath + pathPopup;
+	chrome.runtime.sendMessage({
+		type: "setPopup",
+		path: pathPopup,
+	});
+});

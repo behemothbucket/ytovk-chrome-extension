@@ -1,9 +1,9 @@
 import { Config } from "./config.js";
-import { saveToken } from "./storage.js";
+import { setToken } from "./storage.js";
 
 function handleUrls(tabId, changeInfo, tab) {
 	if ((tab.url).match(Config.OAUTH_TOKEN_PAGE_PATTERN) && changeInfo.url) {
-		saveToken(tab.url);
+		setToken(tab.url);
 		generateNotification("Привязка аккаунта произошла успешно", 2500);
 		chrome.tabs.remove(tabId);
 		return true;
@@ -43,11 +43,20 @@ function handleMessage(request, sender, sendResponse) {
 			tabId: sender.tab.id,
 		});
 	}
+
+	if (request.type === "setPopup") {
+		chrome.action.setPopup({ popup: request.path });
+	}
 	return true;
+}
+
+function setPopup(pathPopup) {
+	chrome.action.setPopup({ popup: pathPopup });
 }
 
 export {
 	generateNotification,
 	handleMessage,
 	handleUrls,
+	setPopup,
 };
