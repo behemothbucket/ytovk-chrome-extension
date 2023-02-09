@@ -15,7 +15,7 @@ chrome.storage.sync.get(["playlist"], (result) => {
 );
 
 function showPlaylist(parameters) {
-	let [ownerId, playlistId] = parameters;
+	let [, ownerId, playlistId] = parameters;
 	chrome.storage.sync.set({ playlist: { ownerId, playlistId } });
 	VK.Widgets.Playlist("vk_playlist", ownerId, playlistId);
 }
@@ -39,7 +39,7 @@ urlInput.addEventListener("click", () => {
 });
 
 loadButton.addEventListener("click", () => {
-	if (!!(urlInput.value).match(Config.VK_PLAYLIST_PATTERN)) {
+	if (!!(urlInput.value).match(Config.VK_PLAYLIST_ALBUM_PATTERN)) {
 		removeIframes();
 		checkInputValue();
 		showPlaylist(getParametersOfUrl());
@@ -53,7 +53,7 @@ loadButton.addEventListener("click", () => {
 });
 
 function getParametersOfUrl() {
-	return urlInput.value.matchAll(/\d+/g);
+	return urlInput.value.match(Config.VK_PLAYLIST_ALBUM_PATTERN);
 }
 
 function checkInputValue() {
