@@ -1,5 +1,7 @@
 import { Config } from "../../scripts/config.js";
 
+//TODO Вынести переиспользуемые функции в helpers
+
 let backButton = document.querySelector(".button_back");
 let urlInput = document.querySelector("#URL-playlist");
 let loadButton = document.querySelector(".button_load");

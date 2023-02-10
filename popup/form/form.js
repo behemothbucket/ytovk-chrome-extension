@@ -84,7 +84,7 @@ window.addEventListener("keypress", (event) => {
 	}
 });
 
-inputURL.addEventListener("keyup", () => {
+inputURL.addEventListener("keyup", async () => {
 	if (inputURL.value === "get_token") {
 		getToken();
 		inputURL.value = "";

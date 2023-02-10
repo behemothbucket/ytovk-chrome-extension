@@ -59,10 +59,10 @@ function attachVKButton() {
 
 	const downloadButton = document.createElement("button");
 	downloadButton.setAttribute("class", "VK_download_button");
-	downloadButton.innerText = "Save to VK";
+	downloadButton.innerText = "Save";
 
 	downloadButton.addEventListener("click", () => {
-		alert("Тестим...");
+		chrome.runtime.sendMessage({ type: "downloadFromYouTube" });
 	});
 
 	ownerDiv.appendChild(downloadButton);

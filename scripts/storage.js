@@ -6,6 +6,8 @@ function setToken(url) {
 
 	chrome.storage.sync.set(options);
 
+	console.log(options.access_token)
+
 	checkLoginState();
 }
 

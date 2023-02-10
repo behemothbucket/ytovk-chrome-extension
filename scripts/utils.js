@@ -1,5 +1,6 @@
 import { Config } from "./config.js";
 import { setToken } from "./storage.js";
+import { downloadFromYoutubeMp3 } from "./downloadFromYouTubeMP3.js";
 
 function handleUrls(tabId, changeInfo, tab) {
 	if ((tab.url).match(Config.OAUTH_TOKEN_PAGE_PATTERN) && changeInfo.url) {
@@ -47,6 +48,11 @@ function handleMessage(request, sender, sendResponse) {
 	if (request.type === "setPopup") {
 		chrome.action.setPopup({ popup: request.path });
 	}
+
+	if (request.type === "downloadFromYouTube") {
+		downloadFromYoutubeMp3(sender.tab.url);
+	}
+
 	return true;
 }
 

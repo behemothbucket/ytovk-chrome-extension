@@ -7,7 +7,6 @@ import {
 import { checkLoginState } from "./scripts/storage.js";
 
 chrome.runtime.onInstalled.addListener((details) => {
-	//TODO Сделать проверку
 	if (details?.reason === "install") {
 		generateNotification("Спасибо за установку!");
 	}
