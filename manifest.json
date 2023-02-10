@@ -33,7 +33,8 @@
     "permissions": [
         "notifications",
         "tabs",
-        "storage"
+        "storage",
+        "scripting"
     ],
     "host_permissions": [
         "<all_urls>"

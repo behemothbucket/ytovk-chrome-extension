@@ -62,8 +62,10 @@ function attachVKButton() {
 	downloadButton.innerText = "Save";
 
 	downloadButton.addEventListener("click", () => {
-		chrome.runtime.sendMessage({ type: "downloadFromYouTube" });
+		// alert(window.location.href);
+		chrome.runtime.sendMessage({type: "openUrl", url: "https://mp3y.download/ru/307/mp3-converter"})
 	});
 
 	ownerDiv.appendChild(downloadButton);
 }
+
