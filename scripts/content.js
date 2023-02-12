@@ -62,9 +62,9 @@ function attachVKButton() {
 	downloadButton.innerText = "Save";
 
 	downloadButton.addEventListener("click", () => {
-		// alert(window.location.href);
-		chrome.runtime.sendMessage({type: "openUrl", url: "https://mp3y.download/ru/307/mp3-converter"})
-	});
+		// Нужно изучить CORS и понять как делать нормальный GET запрос
+		window.open(`https://yotovk.onrender.com/download?url=${window.location.href}`)
+	})
 
 	ownerDiv.appendChild(downloadButton);
 }

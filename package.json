@@ -4,6 +4,7 @@
     "description": "Download from Youtube and save to VK",
     "main": "background.js",
     "type": "module",
+    "proxy": "http://localhost:4000",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
