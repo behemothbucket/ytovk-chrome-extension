@@ -18,6 +18,8 @@ function attachVKButton() {
 
 	const ownerDiv = document.querySelector("div#owner");
 
+	// Делаю стили здесь, потому что если добавлять их в shadow-DOM при перезагрузке страницы,
+	// мы увидим как рендерится кнопка. (Так же пробовал делать через добавление стилей к самой странице)
 	let styles = `
 	.VK_download_button {
 	font-family: 'Roboto', sans-serif;
@@ -61,11 +63,48 @@ function attachVKButton() {
 	downloadButton.setAttribute("class", "VK_download_button");
 	downloadButton.innerText = "Save";
 
+
 	downloadButton.addEventListener("click", () => {
-		// Нужно изучить CORS и понять как делать нормальный GET запрос
-		window.open(`https://yotovk.onrender.com/download?url=${window.location.href}`)
-	})
+		let filename = "";
+		// TODO Нужно изучить CORS и понять как делать нормальный GET запрос
+		fetch(`http://localhost:3000/download?url=${window.location.href}`)
+			.then(res => {
+				let filenameRaw = res.headers.get("content-disposition").split("filename=")[1];
+				filename = filenameRaw.substring(1, filenameRaw.length-1);
+				return res.blob();
+			})
+			.then((blob) => {
+				saveFile(blob, filename);
+			});
+	});
 
 	ownerDiv.appendChild(downloadButton);
 }
 
+function saveFile(blob, filename = "file.mp3") {	
+	// Convert your blob into a Blob URL (a special url that points to an object in the browser's memory)
+	const blobUrl = URL.createObjectURL(blob);
+
+	// Create a link element
+	const link = document.createElement("a");
+
+	// Set link's href to point to the Blob URL
+	link.href = blobUrl;
+	link.download = filename;
+
+	// Append link to the body
+	document.body.appendChild(link);
+
+	//Dispatch click event on the link
+	// This is necessary as link.click() does not work on the latest firefox
+	link.dispatchEvent(
+		new MouseEvent("click", { 
+			bubbles: true, 
+			cancelable: true, 
+			view: window 
+		})
+	);
+
+	// Remove link from body
+	document.body.removeChild(link);
+}

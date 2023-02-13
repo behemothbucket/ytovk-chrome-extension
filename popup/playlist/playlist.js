@@ -1,6 +1,7 @@
 import { Config } from "../../scripts/config.js";
 
 //TODO Вынести переиспользуемые функции в helpers
+//TODO Высота формы подстраивается под наличие/отсутствие плейлиста
 
 let backButton = document.querySelector(".button_back");
 let urlInput = document.querySelector("#URL-playlist");
