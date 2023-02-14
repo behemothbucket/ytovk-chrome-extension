@@ -3,7 +3,7 @@ import { getToken } from "../../scripts/storage.js";
 
 let inputURL = document.getElementById("URL");
 let labelUrlInput = document.getElementById("url_label");
-let labelTitle = document.getElementById("title_label");
+let inputTitle = document.getElementById("title");
 
 chrome.tabs.query({
 	active: true,
@@ -17,7 +17,7 @@ chrome.tabs.query({
 			inputURL.focus();
 		}, 200);
 		setTimeout(() => {
-			labelTitle.focus();
+			inputTitle.focus();
 		}, 600);
 	}
 });
@@ -27,6 +27,7 @@ let buttonDownload = document.querySelector(".button_download");
 let inputs = document.querySelectorAll(".input");
 let errorIcons = document.querySelectorAll(".icon-info-circled");
 let playlist = document.querySelector(".vk_playlist_button");
+let artistInput = document.getElementById("artist");
 
 buttonClear.addEventListener("click", () => {
 	for (const input of inputs) {
@@ -49,7 +50,19 @@ buttonDownload.addEventListener("click", () => {
 			input.nextElementSibling.style.zIndex = "0";
 		}
 	}
-	if (totalValidInputs === 3) alert("Вы не вошли в аккаунт");
+
+	if (totalValidInputs === 3) {
+		chrome.tabs.query({
+			active: true,
+			currentWindow: true, }, (tabs) => {
+			let baseUrl = "https://youtovk.ru/download?url=";
+			let queryUrl = inputURL.value;
+			let queryArtist = artistInput.value;
+			let queryTitle = inputTitle.value;
+			let url = `${baseUrl}${queryUrl}&artist=${queryArtist}&shortTitle=${queryTitle}`;
+			window.open(url, "_parent");
+		});
+	}
 });
 
 function disableErrorIcons() {

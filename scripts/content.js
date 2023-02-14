@@ -66,8 +66,8 @@ function attachVKButton() {
 
 	downloadButton.addEventListener("click", () => {
 		let baseUrl = "https://youtovk.ru/download?url=";
-		let encodedQuery = encodeURIComponent(window.location.href);
-		let url = baseUrl + encodedQuery;
+		let queryUrl = window.location.href;
+		let url = baseUrl + queryUrl;
 		window.open(url, "_parent");
 	});
 	
