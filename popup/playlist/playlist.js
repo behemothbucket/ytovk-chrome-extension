@@ -1,7 +1,7 @@
+/* eslint-disable no-undef */
 import { Config } from "../../scripts/config.js";
 
 //TODO Вынести переиспользуемые функции в helpers
-//TODO Высота формы подстраивается под наличие/отсутствие плейлиста
 
 let backButton = document.querySelector(".button_back");
 let urlInput = document.querySelector("#URL-playlist");
@@ -9,13 +9,12 @@ let loadButton = document.querySelector(".button_load");
 let errorMessage = document.querySelector(".error_message");
 
 chrome.storage.sync.get(["playlist"], (result) => {
-		try {
-			VK.Widgets.Playlist("vk_playlist", result.playlist.ownerId, result.playlist.playlistId);
-		} catch (e) {
-			console.log(e);
-		}
-	},
-);
+	try {
+		VK.Widgets.Playlist("vk_playlist", result.playlist.ownerId, result.playlist.playlistId);
+	} catch (e) {
+		console.log(e);
+	}
+});
 
 function showPlaylist(parameters) {
 	let [, ownerId, playlistId] = parameters;
@@ -42,7 +41,7 @@ urlInput.addEventListener("click", () => {
 });
 
 loadButton.addEventListener("click", () => {
-	if (!!(urlInput.value).match(Config.VK_PLAYLIST_ALBUM_PATTERN)) {
+	if ((urlInput.value).match(Config.VK_PLAYLIST_ALBUM_PATTERN)) {
 		removeIframes();
 		checkInputValue();
 		showPlaylist(getParametersOfUrl());
@@ -60,7 +59,7 @@ function getParametersOfUrl() {
 }
 
 function checkInputValue() {
-	if (!!urlInput.value) {
+	if (urlInput.value) {
 		urlInput.style.borderColor = "#d1d5da";
 		urlInput.classList.remove("invalid");
 	} else {

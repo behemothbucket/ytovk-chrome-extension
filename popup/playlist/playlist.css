@@ -10,7 +10,6 @@
 
 body {
     min-width: 600px;
-    min-height: 300px;
 }
 
 [class^="icon-"]:before, [class*=" icon-"]:before {

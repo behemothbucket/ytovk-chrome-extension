@@ -1,4 +1,4 @@
-/* //TODO Создать общий style.css */
+/* FIXME Создать общий style.css */
 * {
     box-sizing: border-box;
     list-style: none;
@@ -78,7 +78,6 @@ body {
     border-color: rgba(27, 31, 36, 0.15);
     box-shadow: inset 0 1px 0 rgba(76, 0, 20, 0.2);
 }
-
 
 .wrapper {
     max-width: 250px;

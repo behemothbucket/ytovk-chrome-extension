@@ -7,8 +7,7 @@ let labelTitle = document.getElementById("title_label");
 
 chrome.tabs.query({
 	active: true,
-	currentWindow: true,
-}, (tabs) => {
+	currentWindow: true, }, (tabs) => {
 	if (tabs[0].url?.match(Config.YOUTUBE_VIDEO_PAGE_PATTERN)) {
 		inputURL.value = tabs[0].url;
 		labelUrlInput.innerHTML = `<button class="yt_label button" tabindex="-1">
@@ -42,7 +41,7 @@ buttonDownload.addEventListener("click", () => {
 	let totalValidInputs = 0;
 
 	for (const input of inputs) {
-		if (!!input.value) {
+		if (input.value) {
 			totalValidInputs++;
 		} else {
 			input.style.borderColor = "#cf222e";
@@ -61,7 +60,7 @@ function disableErrorIcons() {
 
 inputs.forEach(input => {
 	input.addEventListener("input", () => {
-		if (!!input.value) {
+		if (input.value) {
 			input.style.borderColor = "#d1d5da";
 			input.classList.remove("invalid");
 		} else {
