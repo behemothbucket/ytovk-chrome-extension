@@ -11,18 +11,18 @@
 <div class="wrapper">
     <div class="form">
         <div class="input_field">
-            <label for="URL" id="url_label">URL</label>
-            <input type="text" class="input" id="URL" autocomplete="off">
+            <label for="URL" id="url_label" name="url_label">URL</label>
+            <input type="text" class="input" id="URL" name="URL" autocomplete="off">
             <span class="icon-info-circled"></span>
         </div>
         <div class="input_field">
-            <label for="Title" id="title_label">Title</label>
-            <input type="text" class="input" id="title" autocomplete="off">
+            <label for="Title" id="title_label" name="title_label">Title</label>
+            <input type="text" class="input" id="title" name="title" autocomplete="off">
             <span class="icon-info-circled"></span>
         </div>
         <div class="input_field">
-            <label for="Artist">Author</label>
-            <input type="text" class="input" id="artist" autocomplete="off">
+            <label for="Artist" id="artist_label" name="title">Author</label>
+            <input type="text" class="input" id="artist" name="artist" autocomplete="off">
             <span class="icon-info-circled"></span>
         </div>
         <div class="form_buttons">
@@ -33,11 +33,11 @@
                 Clear
             </button>
         </div>
-        <div>
-            <button class="vk_playlist_button" type="button">
-                <i class="icon-play" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;Playlist
-            </button>
-        </div>
+    </div>
+    <div class="vk_playlist_button_wrapper">
+        <button class="vk_playlist_button" type="button">
+            <i class="icon-play" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;Playlist
+        </button>
     </div>
 </div>
 </body>

@@ -1,33 +1,17 @@
 import { Config } from "../../scripts/config.js";
 import { getToken } from "../../scripts/storage.js";
 
-let inputURL = document.getElementById("URL");
+let inputURL = document.querySelector("input[name='URL']");
 let labelUrlInput = document.getElementById("url_label");
-let inputTitle = document.getElementById("title");
-
-chrome.tabs.query({
-	active: true,
-	currentWindow: true, }, (tabs) => {
-	if (tabs[0].url?.match(Config.YOUTUBE_VIDEO_PAGE_PATTERN)) {
-		inputURL.value = tabs[0].url;
-		labelUrlInput.innerHTML = `<button class="yt_label button" tabindex="-1">
-<i class="icon-youtube-play" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;YouTube</button>`;
-		setTimeout(() => {
-			inputURL.setSelectionRange(0, 0);
-			inputURL.focus();
-		}, 200);
-		setTimeout(() => {
-			inputTitle.focus();
-		}, 600);
-	}
-});
-
+let inputTitle = document.querySelector("input[name='title']");
 let buttonClear = document.querySelector(".button_clear");
 let buttonDownload = document.querySelector(".button_download");
-let inputs = document.querySelectorAll(".input");
+let inputs = document.querySelectorAll("input");
 let errorIcons = document.querySelectorAll(".icon-info-circled");
 let playlist = document.querySelector(".vk_playlist_button");
-let artistInput = document.getElementById("artist");
+let artistInput = document.querySelector("input[name='artist']");
+
+checkCurrentVideoForDownload();
 
 buttonClear.addEventListener("click", () => {
 	for (const input of inputs) {
@@ -54,7 +38,7 @@ buttonDownload.addEventListener("click", () => {
 	if (totalValidInputs === 3) {
 		chrome.tabs.query({
 			active: true,
-			currentWindow: true, }, (tabs) => {
+			currentWindow: true, }, (_) => {
 			let baseUrl = "https://youtovk.ru/download?url=";
 			let queryUrl = inputURL.value;
 			let queryArtist = artistInput.value;
@@ -113,3 +97,36 @@ playlist.addEventListener("click", () => {
 		path: pathPopup,
 	});
 });
+
+function checkCurrentVideoForDownload() {
+	chrome.tabs.query({
+		active: true,
+		lastFocusedWindow: true, }, async (tabs) => {
+		const response = await chrome.tabs.sendMessage(tabs[0].id, { type: "isNotValidVideo" });
+		if (tabs[0].url?.match(Config.YOUTUBE_VIDEO_PAGE_PATTERN)) {
+			if (await response.isNotValidVideo) {
+				renderInvalidVideoForm();
+			} else {
+				renderValidVideoForm(tabs[0]);
+			}
+		}
+	});
+}
+
+function renderValidVideoForm(tab) {
+	inputURL.value = tab.url;
+	labelUrlInput.innerHTML = `<button class="yt_label button" tabindex="-1">
+<i class="icon-youtube-play" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;YouTube</button>`;
+	setTimeout(() => {
+		inputURL.setSelectionRange(0, 0);
+		inputURL.focus();
+	}, 200);
+	setTimeout(() => {
+		inputTitle.focus();
+	}, 600);
+}
+
+function renderInvalidVideoForm() {
+	let form = document.querySelector(".form");
+	form.innerHTML = "<strong style='color: #000';>⚠️ Warning<br><br>Video length <= 6min 0s<br>NO Stream<br><br>Slow server :(</strong>";
+}

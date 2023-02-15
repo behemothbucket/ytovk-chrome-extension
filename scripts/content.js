@@ -1,9 +1,9 @@
 (() => {
 	new MutationObserver(function() {
-		if (document.getElementsByClassName("item style-scope ytd-watch-metadata")[0]) {
+		if (document.getElementsByClassName("item style-scope ytd-watch-metadata")[0]){
 			attachVKButton();
-			this.disconnect();
 		}
+		this.disconnect();
 	}).observe(document, {
 		childList: true, subtree: true,
 	});
@@ -13,7 +13,7 @@
 function attachVKButton() {
 
 	chrome.runtime.sendMessage({ type: "setBadge" });
-
+	
 	if (document.querySelector("#shadow")) return;
 
 	const ownerDiv = document.querySelector("div#owner");
@@ -27,7 +27,8 @@ function attachVKButton() {
     font-weight: 500;
     color: #fff;
     cursor: pointer;
-    margin-left: 20px;
+    margin-left: 15px;
+	margin-right: 25px;
     padding: 0 16px;
     border-radius: 8px;
     height: 30px;
@@ -61,15 +62,50 @@ function attachVKButton() {
 
 	const downloadButton = document.createElement("button");
 	downloadButton.setAttribute("class", "VK_download_button");
-	downloadButton.innerText = "Save";
-
+	downloadButton.innerText = "Save as MP3";
 
 	downloadButton.addEventListener("click", () => {
+		if (isNotValidVideo()) {
+			generateWarningMessage();
+			return;
+		}
+
 		let baseUrl = "https://youtovk.ru/download?url=";
 		let queryUrl = window.location.href;
 		let url = baseUrl + queryUrl;
 		window.open(url, "_parent");
 	});
-	
+
 	ownerDiv.appendChild(downloadButton);
+}
+
+function isNotValidVideo() {
+	let hours, minutes;
+
+	let totalLengthText = document.querySelector(".ytp-progress-bar")
+		.getAttribute("aria-valuetext")
+		.match(/\(.*?\)/)[0];
+
+	let hms = totalLengthText.match(/\d+\s.(?=.)/gm)
+		.map(string => parseInt(string));
+
+	hms.length === 3 ? [hours, minutes,] = hms : [minutes,] = hms;
+
+	return document.querySelector(".ytp-live-badge").checkVisibility() || hours > 0 || minutes >= 6;
+}
+	
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.type === "isNotValidVideo") {
+		sendResponse({ isNotValidVideo: isNotValidVideo() } );
+	}
+});
+
+function generateWarningMessage() {
+	let videoTitle = document.querySelector("h1.style-scope.ytd-watch-metadata");
+	let warningDiv = document.createElement("div");
+	warningDiv.setAttribute("class", "warningVK");
+	videoTitle.style.marginBottom = "10px";
+	warningDiv.innerHTML = "<span style='font-size: 1.5rem'>⚠️ Warning: Video length <= 6min 0s | NO Stream | Slow server :(</span>";    
+	videoTitle.parentNode.appendChild(warningDiv);
+	setTimeout(() => document.querySelector(".warningVK").remove(), 2500);
 }
