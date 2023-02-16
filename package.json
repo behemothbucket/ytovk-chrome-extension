@@ -22,8 +22,5 @@
         "chrome-types": "^0.1.170",
         "eslint": "^8.33.0"
     },
-    "dependencies": {
-        "youtube-mp3-downloader": "^0.7.11",
-        "ytdl-core": "^4.11.2"
-    }
+    "dependencies": {}
 }

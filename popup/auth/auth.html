@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="../../img/fontello/css/fontello.css" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <title>YtoVK</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="form">
+            <div class="input_field">
+                <label for="phone" id="phone_label" name="phone_label">Phone</label>
+                <input type="tel" id="phone" name="phone" maxlength="17" autocomplete="off">
+                <span class="icon-info-circled"></span>
+            </div>
+            <div class="input_field">
+                <label for="password" id="password_label" name="password_label">Password</label>
+                <input type="password" id="password" name="password" autocomplete="off">
+                <span class="icon-info-circled"></span>
+            </div>
+            <button class="auth_button" type="button">
+                <i class="icon-vkontakte" aria-hidden="true" style="font-size: 24px;"></i>&nbsp; Login with Vkontakte
+            </button>
+        </div>
+    </div>
+</body>
+<script src="auth.js" type="module"></script>
+</html>
