@@ -8,8 +8,9 @@ let buttonClear = document.querySelector(".button_clear");
 let buttonDownload = document.querySelector(".button_download");
 let inputs = document.querySelectorAll("input");
 let errorIcons = document.querySelectorAll(".icon-info-circled");
-let playlist = document.querySelector(".vk_playlist_button");
+let playlistButton = document.querySelector(".vk_playlist_button");
 let artistInput = document.querySelector("input[name='artist']");
+let playlistFormButton = document.querySelector(".playlist_form_button");
 
 checkCurrentVideoForDownload();
 
@@ -87,7 +88,7 @@ inputURL.addEventListener("keyup", async () => {
 	}
 });
 
-playlist.addEventListener("click", () => {
+playlistButton.addEventListener("click", () => {
 	let currentUrl = window.location.href;
 	let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
 	let pathPopup = "popup/playlist/playlist.html";
@@ -101,9 +102,9 @@ playlist.addEventListener("click", () => {
 function checkCurrentVideoForDownload() {
 	chrome.tabs.query({
 		active: true,
-		lastFocusedWindow: true, }, async (tabs) => {
-		const response = await chrome.tabs.sendMessage(tabs[0].id, { type: "isNotValidVideo" });
+		currentWindow: true, }, async (tabs) => {
 		if (tabs[0].url?.match(Config.YOUTUBE_VIDEO_PAGE_PATTERN)) {
+			const response = await chrome.tabs.sendMessage(tabs[0].id, { type: "isNotValidVideo" });
 			if (await response.isNotValidVideo) {
 				renderInvalidVideoForm();
 			} else {
@@ -129,4 +130,6 @@ function renderValidVideoForm(tab) {
 function renderInvalidVideoForm() {
 	let form = document.querySelector(".form");
 	form.innerHTML = "<strong style='color: #000';>⚠️ Warning<br><br>Video length <= 6min 0s<br>NO Stream<br><br>Slow server :(</strong>";
+	playlistButton.style.marginTop = "10px";
+	form.appendChild(playlistFormButton);
 }
