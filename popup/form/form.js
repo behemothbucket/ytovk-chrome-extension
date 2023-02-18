@@ -2,7 +2,6 @@ import { Config } from "../../scripts/config.js";
 import { showToken } from "../../scripts/storage.js";
 
 let inputURL = document.querySelector("input[name='URL']");
-let labelUrlInput = document.getElementById("url_label");
 let inputTitle = document.querySelector("input[name='title']");
 let buttonClear = document.querySelector(".button_clear");
 let buttonSave = document.querySelector(".button_save");
@@ -10,10 +9,23 @@ let inputs = document.querySelectorAll("input");
 let errorIcons = document.querySelectorAll(".icon-info-circled");
 let playlistButton = document.querySelector(".vk_playlist_button");
 let artistInput = document.querySelector(".input[name='artist']");
-let playlistFormButton = document.querySelector(".playlist_form_button");
 let loadStateElements = document.querySelectorAll(".load_state");
+let playlistFormButton = document.querySelector(".playlist_form_button");
+let labelUrlInput = document.getElementById("url_label");
 
-checkCurrentVideoForDownload();
+(async () => {
+	const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+
+	if (tab.url.match(Config.YOUTUBE_VIDEO_PAGE_PATTERN)) {
+		const response = await chrome.tabs.sendMessage(tab.id, { type: "validateVideo" });	
+		if (await response.valid === false) { 
+			renderInvalidVideoForm();
+		} else {
+			renderValidVideoForm(response.url);
+
+		}	
+	}
+})();
 
 buttonClear.addEventListener("click", () => {
 	for (const input of inputs) {
@@ -39,18 +51,16 @@ buttonSave.addEventListener("click", () => {
 	}
 
 	if (totalValidInputs === 3 && url.match(Config.YOUTUBE_VIDEO_PAGE_PATTERN)) {
-		chrome.storage.sync.get(["token"], (result) => {
+		chrome.storage.sync.get(["token"], async (result) => {
 			let artist = artistInput.value;
 			let shortTitle = inputTitle.value;
 			let token = result.token;
-			
 			formState(0.5, "Loading...", "wait");
 
-			fetch("https://youtovk.ru/save", {
+			const response = await fetch("http://localhost:4000/save", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					"Accept": "application/json",
 				},
 				body: JSON.stringify({
 					url,
@@ -58,14 +68,17 @@ buttonSave.addEventListener("click", () => {
 					artist,
 					shortTitle
 				})
-			}).then((res) => {
-				if (res.status === 200) {
-					formState(1, "Complete!", "normal");
-				} else { // TODO Сделать подробную ошибку
-					formState(1, "Error!", "wait");
-				}	
-				setTimeout(() => formState(1, "Save", "normal"), 1500);
 			});
+			
+			const statusCode = await response.status;
+
+			if (await statusCode === 200) {
+				alert("Загружено! 😃");
+			} else {
+				alert("Ошибка( 😥");
+			}
+
+			await delay(1000).then(() => formState(1, "Save", "normal"));
 		});
 	} else {
 		inputURL.style.borderColor = "#cf222e";
@@ -73,6 +86,8 @@ buttonSave.addEventListener("click", () => {
 		inputURL.nextElementSibling.style.zIndex = "0";
 	}
 });
+
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function disableErrorIcons() {
 	errorIcons.forEach(icon => {
@@ -123,23 +138,17 @@ playlistButton.addEventListener("click", () => {
 	});
 });
 
-function checkCurrentVideoForDownload() {
-	chrome.tabs.query({
-		active: true,
-		currentWindow: true, }, async (tabs) => {
-		if (tabs[0].url?.match(Config.YOUTUBE_VIDEO_PAGE_PATTERN)) {
-			const response = await chrome.tabs.sendMessage(tabs[0].id, { type: "isNotValidVideo" });
-			if (await response.isNotValidVideo) {
-				renderInvalidVideoForm();
-			} else {
-				renderValidVideoForm(tabs[0]);
-			}
-		}
-	});
+function formState(opacity, statusText, cursor) {
+	for (let elem of loadStateElements) {
+		elem.style.opacity = opacity;
+		elem.disabled = true;
+		elem.style.cursor = cursor;
+	}
+	buttonSave.textContent = statusText;
 }
 
-function renderValidVideoForm(tab) {
-	inputURL.value = tab.url;
+function renderValidVideoForm(url) {
+	inputURL.value = url;
 	labelUrlInput.innerHTML = `<button class="yt_label button" tabindex="-1">
 <i class="icon-youtube-play" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;YouTube</button>`;
 	setTimeout(() => {
@@ -156,13 +165,4 @@ function renderInvalidVideoForm() {
 	form.innerHTML = "<strong style='color: #000';>⚠️ Warning<br><br>Video length <= 6min 0s<br>NO Stream<br><br>Slow server :(</strong>";
 	playlistButton.style.marginTop = "10px";
 	form.appendChild(playlistFormButton);
-}
-
-function formState(opacity, statusText, cursor) {
-	for (let elem of loadStateElements) {
-		elem.style.opacity = opacity;
-		elem.disabled = true;
-		elem.style.cursor = cursor;
-	}
-	buttonSave.textContent = statusText;
 }
