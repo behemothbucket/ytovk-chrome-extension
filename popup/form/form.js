@@ -61,10 +61,10 @@ buttonSave.addEventListener("click", () => {
 			}).then((res) => {
 				if (res.status === 200) {
 					formState(1, "Complete!", "normal");
-					setTimeout(() => formState(1, "Save", "normal"), 1500);
 				} else { // TODO Сделать подробную ошибку
 					formState(1, "Error!", "wait");
 				}	
+				setTimeout(() => formState(1, "Save", "normal"), 1500);
 			});
 		});
 	} else {
