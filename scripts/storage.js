@@ -32,5 +32,4 @@ function checkLoginState() {
 	});
 }
 
-
 export { setToken, getToken, checkLoginState };

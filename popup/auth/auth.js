@@ -1,5 +1,8 @@
+let inputs = document.querySelectorAll("input");
 let inputPhone = document.querySelector("#phone");
 let form = document.querySelector(".form");
+let authButton = document.querySelector(".auth_button");
+let errorIcons = document.querySelectorAll(".icon-info-circled");
 
 inputPhone.addEventListener("input", validatePhone, false);
 inputPhone.addEventListener("focus", validatePhone, false);
@@ -39,28 +42,42 @@ function validatePhone(event) {
 	reg = new RegExp("^" + reg + "$");
 
 	if (!reg.test(this.value) || this.value.length < 5 || keyCode > 47 && keyCode < 58) this.value = new_value;
-	if (event.type == "blur" && this.value.length < 5)  this.value = "";
+	if (event.type === "blur" && this.value.length < 5)  this.value = "";
 }
 
-let authButton = document.querySelector(".auth_button");
+inputs.forEach(input => {
+	input.addEventListener("input", () => {
+		if (input.value) {
+			input.style.borderColor = "#d1d5da";
+			input.classList.remove("invalid");
+		} else {
+			input.style.borderColor = "#cf222e";
+			input.classList.add("invalid");
+		}
+	});
+	input.addEventListener("click", () => {
+		input.nextElementSibling.style.zIndex = "-1";
+		if (input.id === "password") {
+			input.type = "password";
+			input.style.fontStyle = "normal";
+			input.placeholder = "";	
+		}
+	});
+});
 
 authButton.addEventListener("click", () => {
-	
 	let login = inputPhone.value.replace(/[^a-zA-Z0-9]/g, "");
 	let password = document.querySelector("#password").value;
 
 	if (login.length === 11 && password.length >= 6) { 
-		getToken(login, password)
-			.then((responseBody) => {
-				let token = responseBody.token;
-				alert(token);
-				// chrome.runtime.sendMessage({ type: "login", token });				
-			});
+		auth(login, password);
+	} else {
+		indicateErrorCreds();
 	}
 });
 
-async function getToken(login, password) {
-	const rawResponse = await fetch("http://localhost:3000/generateToken", {
+function auth(login, password) {
+	fetch("http://localhost:3000/generateToken", {
 		method: "POST",
 		headers: {
 			"Accept": "application/json",
@@ -70,7 +87,70 @@ async function getToken(login, password) {
 			login,
 			password
 		})
+	}).then((res) => {
+		let json = res.json();
+		if (res.status === 401) {
+			return json.then(json => {
+				showLoginStateMessage(`\u{1F625}\n${json.error}`);
+				setTimeout(() => changePopup("auth"), 2000);
+			});
+		}
+		if (res.status === 200) { 
+			return json.then(json => {
+				showLoginStateMessage("Authorization complete \u{1F973}");
+				setTimeout(() => changePopup("form", json.token), 2000);
+			});
+		}
 	});
+}
 
-	return await rawResponse.json();
+function changePopup(popupName, token = null) {
+	let currentUrl = window.location.href;
+	let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
+	let pathPopup = `popup/${popupName}/${popupName}.html`;
+	window.location.href = rawPath + pathPopup;
+
+	let popupOptions ={
+		type: "setPopup",
+		path: pathPopup,
+		token,
+	};
+
+	chrome.runtime.sendMessage(popupOptions);
+}
+
+function showLoginStateMessage(message) {
+	form.innerHTML = `<p style='color:black;'>${message}</p>`;
+}
+
+function indicateErrorCreds() {
+
+	for (const input of inputs) {
+		if (input.type === "password") {
+			if (input.value.length < 6) {
+				input.type = "text";
+				input.style.fontStyle = "italic";
+				input.placeholder = "min 6 char";
+				input.value = "";
+				input.style.borderColor = "#cf222e";
+				input.classList.add("invalid");
+				input.nextElementSibling.style.zIndex = "0";
+			} else {
+				input.style.borderColor = "#d1d5da";
+				input.classList.remove("invalid");
+			}
+		} else {
+			if (input.value.length < 17) {
+				input.style.borderColor = "#cf222e";
+				input.classList.add("invalid");
+				input.nextElementSibling.style.zIndex = "0"; 
+			} else {
+				input.style.borderColor = "#d1d5da";
+				input.classList.remove("invalid");
+			}
+			if (input.value.length > 14) {
+				input.nextElementSibling.style.zIndex = "-1"; 
+			}
+		}
+	}
 }

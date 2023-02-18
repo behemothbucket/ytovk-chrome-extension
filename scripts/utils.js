@@ -15,12 +15,11 @@ function generateNotification(text, delay = 1500) {
 	);
 }
 
-function handleMessage(request, sender, sendResponse) {
-	if (request.type === "login") {
-		generateNotification("Авторизация успешно завершена");
-		setToken(request.token);
-	}
+function handleMessage(request, sender, _sendResponse) {
+	if (request.token) setToken(request.token);
 
+	if (request.type === "setPopup") chrome.action.setPopup({ popup: request.path });
+	
 	if (request.type === "setBadge") {
 		chrome.action.setBadgeText({
 			text: "YT",
@@ -32,7 +31,6 @@ function handleMessage(request, sender, sendResponse) {
 		});
 	}
 
-	if (request.type === "setPopup") chrome.action.setPopup({ popup: request.path });
 	
 	return true;
 }

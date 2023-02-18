@@ -7,12 +7,12 @@
 }
 
 body {
-    min-width: 250px;
+    min-width: 175px;
 }
 
 /* Repeated */
 .wrapper {
-    max-width: 250px;
+    max-width: 175px;
     width: 100%;
     height: auto;
 }
@@ -101,7 +101,7 @@ body {
 
 .icon-vkontakte {
     padding-bottom: 3px;
-    padding-left: 5px;
+    padding-left: 15px;
 }
 
 .icon-info-circled {
