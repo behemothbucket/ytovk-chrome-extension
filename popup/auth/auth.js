@@ -77,7 +77,7 @@ authButton.addEventListener("click", () => {
 });
 
 function auth(login, password) {
-	fetch("http://localhost:3000/generateToken", {
+	fetch("https://youtovk.ru/generateToken", {
 		method: "POST",
 		headers: {
 			"Accept": "application/json",

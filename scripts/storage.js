@@ -7,12 +7,10 @@ function setToken(token) {
 	checkLoginState();
 }
 
-function getToken() {
+function showToken() {
 	chrome.storage.sync.get(["token"], (res) => {
-		// \t not working good in alerts
-		alert(res.access_token + "\n" +
-			"                 	                                          " +
-			"zzZZzzzZ 🐝");
+		alert(res.token + "\n                                                          " +
+		"         zZz🐝zzzZ");
 	});
 }
 
@@ -32,4 +30,4 @@ function checkLoginState() {
 	});
 }
 
-export { setToken, getToken, checkLoginState };
+export { setToken, showToken, checkLoginState };

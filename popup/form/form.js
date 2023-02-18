@@ -1,16 +1,17 @@
 import { Config } from "../../scripts/config.js";
-import { getToken } from "../../scripts/storage.js";
+import { showToken } from "../../scripts/storage.js";
 
 let inputURL = document.querySelector("input[name='URL']");
 let labelUrlInput = document.getElementById("url_label");
 let inputTitle = document.querySelector("input[name='title']");
 let buttonClear = document.querySelector(".button_clear");
-let buttonDownload = document.querySelector(".button_download");
+let buttonSave = document.querySelector(".button_save");
 let inputs = document.querySelectorAll("input");
 let errorIcons = document.querySelectorAll(".icon-info-circled");
 let playlistButton = document.querySelector(".vk_playlist_button");
-let artistInput = document.querySelector("input[name='artist']");
+let artistInput = document.querySelector(".input[name='artist']");
 let playlistFormButton = document.querySelector(".playlist_form_button");
+let loadStateElements = document.querySelectorAll(".load_state");
 
 checkCurrentVideoForDownload();
 
@@ -23,8 +24,9 @@ buttonClear.addEventListener("click", () => {
 	}
 });
 
-buttonDownload.addEventListener("click", () => {
+buttonSave.addEventListener("click", () => {
 	let totalValidInputs = 0;
+	let url = inputURL.value;
 
 	for (const input of inputs) {
 		if (input.value) {
@@ -36,17 +38,39 @@ buttonDownload.addEventListener("click", () => {
 		}
 	}
 
-	if (totalValidInputs === 3) {
-		chrome.tabs.query({
-			active: true,
-			currentWindow: true, }, (_) => {
-			let baseUrl = "https://youtovk.ru/download?url=";
-			let queryUrl = inputURL.value;
-			let queryArtist = artistInput.value;
-			let queryTitle = inputTitle.value;
-			let url = `${baseUrl}${queryUrl}&artist=${queryArtist}&shortTitle=${queryTitle}`;
-			window.open(url, "_parent");
+	if (totalValidInputs === 3 && url.match(Config.YOUTUBE_VIDEO_PAGE_PATTERN)) {
+		chrome.storage.sync.get(["token"], (result) => {
+			let artist = artistInput.value;
+			let shortTitle = inputTitle.value;
+			let token = result.token;
+			
+			formState(0.5, "Loading...", "wait");
+
+			fetch("https://youtovk.ru/save", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json",
+				},
+				body: JSON.stringify({
+					url,
+					token,
+					artist,
+					shortTitle
+				})
+			}).then((res) => {
+				if (res.status === 200) {
+					formState(1, "Complete!", "normal");
+					setTimeout(() => formState(1, "Save", "normal"), 1500);
+				} else { // TODO Сделать подробную ошибку
+					formState(1, "Error!", "wait");
+				}	
+			});
 		});
+	} else {
+		inputURL.style.borderColor = "#cf222e";
+		inputURL.classList.add("invalid");
+		inputURL.nextElementSibling.style.zIndex = "0";
 	}
 });
 
@@ -83,7 +107,7 @@ window.addEventListener("keypress", (event) => {
 
 inputURL.addEventListener("keyup", async () => {
 	if (inputURL.value === "get_token") {
-		getToken();
+		showToken();
 		inputURL.value = "";
 	}
 });
@@ -132,4 +156,13 @@ function renderInvalidVideoForm() {
 	form.innerHTML = "<strong style='color: #000';>⚠️ Warning<br><br>Video length <= 6min 0s<br>NO Stream<br><br>Slow server :(</strong>";
 	playlistButton.style.marginTop = "10px";
 	form.appendChild(playlistFormButton);
+}
+
+function formState(opacity, statusText, cursor) {
+	for (let elem of loadStateElements) {
+		elem.style.opacity = opacity;
+		elem.disabled = true;
+		elem.style.cursor = cursor;
+	}
+	buttonSave.textContent = statusText;
 }

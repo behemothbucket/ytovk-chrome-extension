@@ -27,7 +27,7 @@ body {
 
 .playlist_form_button {
     display: flex;
-    justify-content:center;
+    justify-content:flex-start;
 }
 
 .button {
@@ -47,17 +47,17 @@ body {
     outline: 0;
 }
 
-.button_download {
+.button_save {
     background-color: #2da44e;
     border-color: rgba(27, 31, 36, 0.15);
 }
 
-.button_download:hover {
+.button_save:hover {
     background-color: #2c974b;
     border-color: rgba(27, 31, 36, 0.15);
 }
 
-.button_download:active,
+.button_save:active,
 .active {
     background-color: hsla(137, 55%, 36%, 1);
 }

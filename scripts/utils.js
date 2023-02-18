@@ -15,11 +15,19 @@ function generateNotification(text, delay = 1500) {
 	);
 }
 
-function handleMessage(request, sender, _sendResponse) {
+function handleMessage(request, sender, sendResponse) {
 	if (request.token) setToken(request.token);
 
 	if (request.type === "setPopup") chrome.action.setPopup({ popup: request.path });
 	
+	if (request.type === "getToken") {
+		chrome.storage.sync.get(["token"], res => {
+			sendResponse({
+				token: res.token,
+			});
+		});
+	}
+
 	if (request.type === "setBadge") {
 		chrome.action.setBadgeText({
 			text: "YT",
@@ -31,7 +39,6 @@ function handleMessage(request, sender, _sendResponse) {
 		});
 	}
 
-	
 	return true;
 }
 
