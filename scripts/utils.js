@@ -39,13 +39,44 @@ function handleMessage(request, sender, sendResponse) {
 		});
 	}
 
-	return true;
-}
+	if (request.type === "saveAudioToVK") {
+		saveAudioToVK(request.url, request.artist, request.shortTitle);
+	}
 
+	// return true;
+}
 
 function setPopup(pathPopup) {
 	chrome.action.setPopup({ popup: pathPopup });
 }
+
+function saveAudioToVK(url, artist, shortTitle) {
+	chrome.storage.sync.get(["token"], async result => {
+		const token = result.token;
+		const body = JSON.stringify({
+			url,
+			token,
+			artist,
+			shortTitle
+		});
+		const headers =  { "Content-Type": "application/json" };
+
+		try {
+			const response = await fetch("http://youtovk.ru/save", { method: "POST", body, headers });
+
+			if (response.ok) {
+				generateNotification("Saved successfully");
+			} else {
+				generateNotification(`Failed to save (${response.status})`);
+			}
+		} catch (error) {
+			generateNotification("Failed to save");
+		} finally {
+			chrome.runtime.sendMessage({ type: "audioSaved" });
+		}
+	});
+}
+
 
 export {
 	generateNotification,

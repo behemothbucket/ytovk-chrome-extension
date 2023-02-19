@@ -1,31 +1,32 @@
 import { Config } from "../../scripts/config.js";
 import { showToken } from "../../scripts/storage.js";
 
-let inputURL = document.querySelector("input[name='URL']");
-let inputTitle = document.querySelector("input[name='title']");
 let buttonClear = document.querySelector(".button_clear");
 let buttonSave = document.querySelector(".button_save");
 let inputs = document.querySelectorAll("input");
 let errorIcons = document.querySelectorAll(".icon-info-circled");
-let playlistButton = document.querySelector(".vk_playlist_button");
-let artistInput = document.querySelector(".input[name='artist']");
+let buttonPlaylist = document.querySelector(".vk_playlist_button");
+let formButtonPlaylist = document.querySelector(".playlist_form_button");
+let labelInputUrl = document.getElementById("url_label");
+let inputURL = document.getElementById("url");
+let inputTitle = document.getElementById("title");
+let inputArtist = document.getElementById("artist");
 let loadStateElements = document.querySelectorAll(".load_state");
-let playlistFormButton = document.querySelector(".playlist_form_button");
-let labelUrlInput = document.getElementById("url_label");
 
 (async () => {
 	const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
 
-	if (tab.url.match(Config.YOUTUBE_VIDEO_PAGE_PATTERN)) {
+	if (checkYtUrl(tab.url)) {
 		const response = await chrome.tabs.sendMessage(tab.id, { type: "validateVideo" });	
 		if (await response.valid === false) { 
 			renderInvalidVideoForm();
 		} else {
-			renderValidVideoForm(response.url);
-
+			renderValidVideoForm(tab.url);
 		}	
 	}
 })();
+
+const checkYtUrl = (url) => url.match(Config.YOUTUBE_VIDEO_PAGE_PATTERN);
 
 buttonClear.addEventListener("click", () => {
 	for (const input of inputs) {
@@ -36,9 +37,14 @@ buttonClear.addEventListener("click", () => {
 	}
 });
 
-buttonSave.addEventListener("click", () => {
+// TODO Показывать ссылку на только что загруженный файл
+// это сократит обращения к нашему серверу, так как мы просто получим ссылку
+// на скачивание трека с сервера ВК
+// убрать эту огромную логику в отдельную функцию
+// постараться распределить переиспользуемые функции в отдельный модуль
+// а ЛУЧШЕ? сделать все в ООП стиле, и наследовать от главного класса (Page Factory???)
+buttonSave.addEventListener("click", async () => {
 	let totalValidInputs = 0;
-	let url = inputURL.value;
 
 	for (const input of inputs) {
 		if (input.value) {
@@ -50,44 +56,22 @@ buttonSave.addEventListener("click", () => {
 		}
 	}
 
-	if (totalValidInputs === 3 && url.match(Config.YOUTUBE_VIDEO_PAGE_PATTERN)) {
-		chrome.storage.sync.get(["token"], async (result) => {
-			let artist = artistInput.value;
-			let shortTitle = inputTitle.value;
-			let token = result.token;
-			formState(0.5, "Loading...", "wait");
-
-			const response = await fetch("http://localhost:4000/save", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					url,
-					token,
-					artist,
-					shortTitle
-				})
+	if (totalValidInputs === 3) {
+		if (checkYtUrl(inputURL.value)) {
+			formState(0.5, "Loading...", "wait", true);
+			chrome.runtime.sendMessage({ 
+				type: "saveAudioToVK", 
+				url: inputURL.value, 
+				artist: inputArtist.value, 
+				shortTitle: inputTitle.value 
 			});
-			
-			const statusCode = await response.status;
-
-			if (await statusCode === 200) {
-				alert("Загружено! 😃");
-			} else {
-				alert("Ошибка( 😥");
-			}
-
-			await delay(1000).then(() => formState(1, "Save", "normal"));
-		});
-	} else {
-		inputURL.style.borderColor = "#cf222e";
-		inputURL.classList.add("invalid");
-		inputURL.nextElementSibling.style.zIndex = "0";
+		} else {
+			inputURL.style.borderColor = "#cf222e";
+			inputURL.classList.add("invalid");
+			inputURL.nextElementSibling.style.zIndex = "0";
+		}
 	}
 });
-
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function disableErrorIcons() {
 	errorIcons.forEach(icon => {
@@ -127,7 +111,8 @@ inputURL.addEventListener("keyup", async () => {
 	}
 });
 
-playlistButton.addEventListener("click", () => {
+// TODO Вынести setPopup в utils, message не нужен
+buttonPlaylist.addEventListener("click", () => {
 	let currentUrl = window.location.href;
 	let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
 	let pathPopup = "popup/playlist/playlist.html";
@@ -138,18 +123,9 @@ playlistButton.addEventListener("click", () => {
 	});
 });
 
-function formState(opacity, statusText, cursor) {
-	for (let elem of loadStateElements) {
-		elem.style.opacity = opacity;
-		elem.disabled = true;
-		elem.style.cursor = cursor;
-	}
-	buttonSave.textContent = statusText;
-}
-
 function renderValidVideoForm(url) {
 	inputURL.value = url;
-	labelUrlInput.innerHTML = `<button class="yt_label button" tabindex="-1">
+	labelInputUrl.innerHTML = `<button class="yt_label button" tabindex="-1">
 <i class="icon-youtube-play" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;YouTube</button>`;
 	setTimeout(() => {
 		inputURL.setSelectionRange(0, 0);
@@ -163,6 +139,24 @@ function renderValidVideoForm(url) {
 function renderInvalidVideoForm() {
 	let form = document.querySelector(".form");
 	form.innerHTML = "<strong style='color: #000';>⚠️ Warning<br><br>Video length <= 6min 0s<br>NO Stream<br><br>Slow server :(</strong>";
-	playlistButton.style.marginTop = "10px";
-	form.appendChild(playlistFormButton);
+	buttonPlaylist.style.marginTop = "10px";
+	form.appendChild(formButtonPlaylist);
 }
+
+// Лучше сделать классы CSS toggle
+function formState(opacity, statusText, cursor, disabled) {
+	return new Promise(() => {
+		for (let elem of loadStateElements) {
+			elem.style.opacity = opacity;
+			elem.disabled = disabled;
+			elem.style.cursor = cursor;
+		}
+		buttonSave.textContent = statusText;
+	});
+}
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.type === "audioSaved") {
+		formState(1, "Save", "default", true);
+	}
+});

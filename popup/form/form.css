@@ -173,3 +173,19 @@ body {
 .icon-play {
     padding-bottom: 2px;
 }
+
+.loading_paragraph {
+    display: flex;
+}
+
+.loading_gif {
+    width: 120px;
+    height: auto;
+}
+
+.loading_text {
+    align-self: center;
+    color: #000;
+    padding-left: 25px;
+  }
+  

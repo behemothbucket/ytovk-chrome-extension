@@ -95,7 +95,7 @@ function auth(login, password) {
 				setTimeout(() => changePopup("auth"), 2000);
 			});
 		}
-		if (res.status === 200) { 
+		if (res.ok) { 
 			return json.then(json => {
 				showLoginStateMessage("Authorization complete \u{1F973}");
 				setTimeout(() => changePopup("form", json.token), 2000);

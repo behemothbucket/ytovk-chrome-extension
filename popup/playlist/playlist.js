@@ -3,9 +3,9 @@ import { Config } from "../../scripts/config.js";
 
 //TODO Вынести переиспользуемые функции в helpers
 
-let backButton = document.querySelector(".button_back");
-let urlInput = document.querySelector("#URL-playlist");
-let loadButton = document.querySelector(".button_load");
+let buttonBack = document.querySelector(".button_back");
+let inputUrl = document.querySelector("#URL-playlist");
+let buttonLoad = document.querySelector(".button_load");
 let errorMessage = document.querySelector(".error_message");
 
 chrome.storage.sync.get(["playlist"], (result) => {
@@ -22,7 +22,7 @@ function showPlaylist(parameters) {
 	VK.Widgets.Playlist("vk_playlist", ownerId, playlistId);
 }
 
-backButton.addEventListener("click", () => {
+buttonBack.addEventListener("click", () => {
 	let currentUrl = window.location.href;
 	let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
 	let pathPopup = "popup/form/form.html";
@@ -33,38 +33,38 @@ backButton.addEventListener("click", () => {
 	});
 });
 
-urlInput.addEventListener("input", checkInputValue);
+inputUrl.addEventListener("input", checkInputValue);
 
-urlInput.addEventListener("click", () => {
-	urlInput.nextElementSibling.style.zIndex = "-1";
+inputUrl.addEventListener("click", () => {
+	inputUrl.nextElementSibling.style.zIndex = "-1";
 	errorMessage.style.display = "none";
 });
 
-loadButton.addEventListener("click", () => {
-	if ((urlInput.value).match(Config.VK_PLAYLIST_ALBUM_PATTERN)) {
+buttonLoad.addEventListener("click", () => {
+	if ((inputUrl.value).match(Config.VK_PLAYLIST_ALBUM_PATTERN)) {
 		removeIframes();
 		checkInputValue();
 		showPlaylist(getParametersOfUrl());
 		errorMessage.style.display = "none";
-		urlInput.style.borderColor = "#d1d5da";
+		inputUrl.style.borderColor = "#d1d5da";
 	} else {
 		errorMessage.style.display = "revert";
-		urlInput.classList.add("invalid");
-		urlInput.style.borderColor = "#cf222e";
+		inputUrl.classList.add("invalid");
+		inputUrl.style.borderColor = "#cf222e";
 	}
 });
 
 function getParametersOfUrl() {
-	return urlInput.value.match(Config.VK_PLAYLIST_ALBUM_PATTERN);
+	return inputUrl.value.match(Config.VK_PLAYLIST_ALBUM_PATTERN);
 }
 
 function checkInputValue() {
-	if (urlInput.value) {
-		urlInput.style.borderColor = "#d1d5da";
-		urlInput.classList.remove("invalid");
+	if (inputUrl.value) {
+		inputUrl.style.borderColor = "#d1d5da";
+		inputUrl.classList.remove("invalid");
 	} else {
-		urlInput.style.borderColor = "#cf222e";
-		urlInput.classList.add("invalid");
+		inputUrl.style.borderColor = "#cf222e";
+		inputUrl.classList.add("invalid");
 	}
 }
 
