@@ -72,7 +72,10 @@ function saveAudioToVK(url, artist, shortTitle) {
 		} catch (error) {
 			generateNotification("Failed to save");
 		} finally {
-			chrome.runtime.sendMessage({ type: "audioSaved" });
+			// Игнорируем ошибку если пользователь закрыл popup, аудио все равно сохранится,
+			// а эта ошибка будет указывать на то, что некому принимать сообщение на стороне popup, 
+			// оно и понятно, ведь когда popup закрыт onMessage лисенер не работает
+			chrome.runtime.sendMessage({ type: "audioSaved" }).catch(error => console.log(error));
 		}
 	});
 }
