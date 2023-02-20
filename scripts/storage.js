@@ -1,16 +1,27 @@
 import { setPopup } from "./utils.js";
 
-function setToken(token) {
-	chrome.storage.sync.set({
-		token
-	});
+function setToken(url) {
+	const options = {};
+	options.token = url.substring(url.indexOf("=") + 1, url.indexOf("&"));
+	chrome.storage.sync.set(options);
 	checkLoginState();
 }
 
 function showToken() {
 	chrome.storage.sync.get(["token"], (res) => {
-		alert(res.token + "\n                                                          " +
-		"         zZz🐝zzzZ");
+		alert(res.token);
+	});
+}
+
+function saveTrack(artist, shortTitle, url) {
+	chrome.storage.local.get(["downloads"], (result) => {
+		let downloads = result.downloads;
+		if (!downloads[artist]) {
+			downloads[artist] = { [shortTitle]: url };
+		} else {
+			downloads[artist] = Object.assign(downloads[artist], { [shortTitle]: url } );
+		}
+		chrome.storage.local.set({ downloads });
 	});
 }
 
@@ -30,4 +41,14 @@ function checkLoginState() {
 	});
 }
 
-export { setToken, showToken, checkLoginState };
+function createDownloadsStore() {
+	chrome.storage.local.set({ downloads: {} });
+}
+
+export { 
+	setToken, 
+	showToken, 
+	saveTrack, 
+	checkLoginState, 
+	createDownloadsStore 
+};

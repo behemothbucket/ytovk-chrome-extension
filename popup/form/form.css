@@ -25,7 +25,7 @@ body {
     margin-bottom: 10px;
 }
 
-.playlist_form_button {
+.downloads_form_button {
     display: flex;
     justify-content:flex-start;
 }
@@ -148,7 +148,7 @@ body {
     user-select: none;
 }
 
-.vk_playlist_button {
+.downloads_button {
     cursor: pointer;
     border-radius: 6px;
     border: 1px solid rgba(27, 31, 36, 0.15);
@@ -174,18 +174,8 @@ body {
     padding-bottom: 2px;
 }
 
-.loading_paragraph {
-    display: flex;
+.loading {
+    opacity: 0.6;
+    cursor: progress;
+    pointer-events: none;
 }
-
-.loading_gif {
-    width: 120px;
-    height: auto;
-}
-
-.loading_text {
-    align-self: center;
-    color: #000;
-    padding-left: 25px;
-  }
-  

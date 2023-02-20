@@ -4,25 +4,28 @@ import { showToken } from "../../scripts/storage.js";
 let buttonClear = document.querySelector(".button_clear");
 let buttonSave = document.querySelector(".button_save");
 let inputs = document.querySelectorAll("input");
+let buttons = document.querySelectorAll("button");
 let errorIcons = document.querySelectorAll(".icon-info-circled");
-let buttonPlaylist = document.querySelector(".vk_playlist_button");
-let formButtonPlaylist = document.querySelector(".playlist_form_button");
+let buttonPlaylist = document.querySelector(".downloads_button");
+let formButtonPlaylist = document.querySelector(".downloads_form_button");
 let labelInputUrl = document.getElementById("url_label");
 let inputURL = document.getElementById("url");
 let inputTitle = document.getElementById("title");
 let inputArtist = document.getElementById("artist");
-let loadStateElements = document.querySelectorAll(".load_state");
+let loadStateElements = [...buttons, ...inputs];
 
 (async () => {
 	const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
 
 	if (checkYtUrl(tab.url)) {
-		const response = await chrome.tabs.sendMessage(tab.id, { type: "validateVideo" });	
-		if (await response.valid === false) { 
-			renderInvalidVideoForm();
-		} else {
-			renderValidVideoForm(tab.url);
-		}	
+		chrome.tabs.sendMessage(tab.id, { type: "validateVideo" })
+			.then(result => {
+				if (result.valid) { 
+					renderValidVideoForm(tab.url);
+				} else {
+					renderInvalidVideoForm();
+				}	
+			});
 	}
 })();
 
@@ -58,7 +61,7 @@ buttonSave.addEventListener("click", async () => {
 
 	if (totalValidInputs === 3) {
 		if (checkYtUrl(inputURL.value)) {
-			formState(0.5, "Loading...", "wait", true);
+			formState("Loading...");
 			chrome.runtime.sendMessage({ 
 				type: "saveAudioToVK", 
 				url: inputURL.value, 
@@ -115,7 +118,7 @@ inputURL.addEventListener("keyup", async () => {
 buttonPlaylist.addEventListener("click", () => {
 	let currentUrl = window.location.href;
 	let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
-	let pathPopup = "popup/playlist/playlist.html";
+	let pathPopup = "popup/downloads/downloads.html";
 	window.location.href = rawPath + pathPopup;
 	chrome.runtime.sendMessage({
 		type: "setPopup",
@@ -132,7 +135,7 @@ function renderValidVideoForm(url) {
 		inputURL.focus();
 	}, 200);
 	setTimeout(() => {
-		inputTitle.focus();
+		inputArtist.focus();
 	}, 600);
 }
 
@@ -143,13 +146,10 @@ function renderInvalidVideoForm() {
 	form.appendChild(formButtonPlaylist);
 }
 
-// Лучше сделать классы CSS toggle
-function formState(opacity, statusText, cursor, disabled) {
+function formState(statusText) {
 	return new Promise(() => {
 		for (let elem of loadStateElements) {
-			elem.style.opacity = opacity;
-			elem.disabled = disabled;
-			elem.style.cursor = cursor;
+			elem.classList.toggle("loading");
 		}
 		buttonSave.textContent = statusText;
 	});
@@ -157,6 +157,6 @@ function formState(opacity, statusText, cursor, disabled) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.type === "audioSaved") {
-		formState(1, "Save", "default", true);
+		formState("Save");
 	}
 });

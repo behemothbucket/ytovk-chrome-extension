@@ -1,4 +1,15 @@
+import { Config } from "./config.js";
 import { setToken } from "./storage.js";
+import { saveTrack } from "./storage.js";
+
+function handleUrls(tabId, changeInfo, tab) {
+	if ((tab.url).match(Config.OAUTH_TOKEN_PAGE_PATTERN) && changeInfo.url) {
+		setToken(tab.url);
+		generateNotification("Привязка аккаунта произошла успешно", 2500);
+		chrome.tabs.remove(tabId);
+		return true;
+	}
+}
 
 function generateNotification(text, delay = 1500) {
 	chrome.notifications.create("", {
@@ -16,7 +27,12 @@ function generateNotification(text, delay = 1500) {
 }
 
 function handleMessage(request, sender, sendResponse) {
-	if (request.token) setToken(request.token);
+	if (request.type === "login") {
+		chrome.tabs.create({
+			url: Config.OAUTH_URL,
+			active: true,
+		});
+	}
 
 	if (request.type === "setPopup") chrome.action.setPopup({ popup: request.path });
 	
@@ -43,6 +59,13 @@ function handleMessage(request, sender, sendResponse) {
 		saveAudioToVK(request.url, request.artist, request.shortTitle);
 	}
 
+	if (request.type === "downloadTrack") {
+		chrome.downloads.download({
+			filename: request.filename,
+			url: request.url,
+		});
+	}
+
 	// return true;
 }
 
@@ -59,30 +82,34 @@ function saveAudioToVK(url, artist, shortTitle) {
 			artist,
 			shortTitle
 		});
-		const headers =  { "Content-Type": "application/json" };
+		const headers =  { 
+			"Accept": "application/json",
+			"Content-Type": "application/json",
+		};
 
 		try {
 			const response = await fetch("http://youtovk.ru/save", { method: "POST", body, headers });
+			const json = await response.json();
 
 			if (response.ok) {
-				generateNotification("Saved successfully");
+				generateNotification("Успешно сохранено");
+				saveTrack(artist, shortTitle, json.url);
+				// Игнорируем ошибку если пользователь закрыл popup, аудио все равно сохранится,
+				// а эта ошибка будет указывать на то, что некому принимать сообщение на стороне popup, 
+				// оно и понятно, ведь когда popup закрыт onMessage лисенер не работает
+				chrome.runtime.sendMessage({ type: "audioSaved" }).catch(error => console.log(error));
 			} else {
-				generateNotification(`Failed to save (${response.status})`);
+				generateNotification(`Неудача, код ошибки: ${response.status}`);
 			}
 		} catch (error) {
 			generateNotification("Failed to save");
-		} finally {
-			// Игнорируем ошибку если пользователь закрыл popup, аудио все равно сохранится,
-			// а эта ошибка будет указывать на то, что некому принимать сообщение на стороне popup, 
-			// оно и понятно, ведь когда popup закрыт onMessage лисенер не работает
-			chrome.runtime.sendMessage({ type: "audioSaved" }).catch(error => console.log(error));
 		}
 	});
 }
 
-
 export {
 	generateNotification,
 	handleMessage,
+	handleUrls,
 	setPopup,
 };
