@@ -3,7 +3,7 @@
     "description": "__MSG_description__",
     "name": "__MSG_name__",
     "manifest_version": 3,
-    "version": "2.3",
+    "version": "2.3.1",
     "author": "foldersjarer@gmail.com",
     "icons": {
         "16": "img/icon_active_16.png",
@@ -35,7 +35,6 @@
         "tabs",
         "storage",
         "scripting",
-        "background",
         "downloads"
     ],
     "host_permissions": [

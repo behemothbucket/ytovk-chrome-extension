@@ -12,9 +12,10 @@ function handleUrls(tabId, changeInfo, tab) {
 }
 
 function generateNotification(text, delay = 1500) {
+	let iconUrl = chrome.runtime.getURL("../img/icon_active.png");
 	chrome.notifications.create("", {
 		type: "basic",
-		iconUrl: "img/icon_active.png",
+		iconUrl,
 		title: "YToVK",
 		message: text,
 	},
