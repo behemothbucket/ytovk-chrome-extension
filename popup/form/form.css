@@ -9,6 +9,7 @@
 
 body {
     min-width: 250px;
+    margin: 0;
 }
 
 [class^="icon-"]:before, [class*=" icon-"]:before {
@@ -82,16 +83,8 @@ body {
     box-shadow: inset 0 1px 0 rgba(76, 0, 20, 0.2);
 }
 
-.wrapper {
-    max-width: 250px;
-    width: 100%;
-    height: auto;
-}
-
 .wrapper .form {
     background-color: #f6f8fa;
-    border: 1px solid hsla(210, 18%, 87%, 1);
-    border-radius: 6px;
     padding: 10px 20px;
 }
 

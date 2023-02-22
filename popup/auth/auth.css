@@ -9,8 +9,22 @@
 }
 
 body {
-    min-width: 250px;
-    min-height: 0;
+    /* min-width: 300px; */
+    margin: 0;
+}
+
+.wrapper {
+    /* max-width: 300px; */
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    text-align: center !important;
+}
+
+.wrapper .form {
+    background-color: #f6f8fa;
+    padding: 10px 20px;
 }
 
 .auth_button {
@@ -23,7 +37,7 @@ body {
     background-image: -ms-linear-gradient(top, #2c74c9, #295192);
     background-image: -o-linear-gradient(top, #2c74c9, #295192);
     background-image: linear-gradient(top, #2c74c9, #295192);
-    font-weight: 600;
+    font-weight: 500;
     vertical-align: middle;
     width: 100%;
     padding: 10px 10px;
@@ -53,5 +67,12 @@ body {
 
 .icon-vkontakte {
     padding-bottom: 3px;
-    padding-left: 25px;
+}
+
+.icon-text {
+    padding: 0 5px;
+}
+
+.greeting-thank-you {
+    color: #24292f;
 }
