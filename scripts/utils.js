@@ -74,29 +74,27 @@ function saveAudioToVK(url, artist, shortTitle) {
 
             if (response.ok) {
                 saveTrack(artist, shortTitle, json.url);
-                // Игнорируем ошибку если пользователь закрыл popup, аудио все равно сохранится,
-                // а эта ошибка будет указывать на то, что некому принимать сообщение на стороне popup,
-                // оно и понятно, ведь когда popup закрыт onMessage лисенер не работает
-                chrome.runtime
-                    .sendMessage({ type: "audioSaved", result: true })
-                    .catch((error) => console.log(error));
+                setPopup("../popup/loading/success.html");
+                sendSavingResult("saved", "200");
             } else {
-                chrome.runtime
-                    .sendMessage({
-                        type: "audioSaved",
-                        result: false,
-                        responseStatus: response.status,
-                    })
-                    .catch((error) =>
-                        console.log(
-                            `Error: ${error}\nResponse status: ${response.status}`
-                        )
-                    );
+                setPopup("../popup/loading/fail.html");
+                sendSavingResult("serverError", response.status);
             }
         } catch (error) {
-            console.log("NOT OK");
+            setPopup("../popup/loading/fail.html");
+            sendSavingResult("requestError", "");
         }
     });
+}
+
+function sendSavingResult(result, responseStatus) {
+    chrome.runtime
+        .sendMessage({
+            type: "savingState",
+            result,
+            responseStatus,
+        })
+        .catch(() => console.log("Probably popup is closed"));
 }
 
 export { handleMessage, handleUrls, setPopup };

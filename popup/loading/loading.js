@@ -1,32 +1,34 @@
 let figcaption = document.querySelector("figcaption");
-let buttonBack = document.querySelector(".button_back");
 
-let interval = setInterval(() => {
+setInterval(() => {
     figcaption.textContent += ".";
     if (figcaption.textContent.length > 10) figcaption.textContent = "Loading";
 }, 1000);
 
-buttonBack.addEventListener("click", () => {
-    let currentUrl = window.location.href;
-    let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
-    let pathPopup = "popup/form/form.html";
-    window.location.href = rawPath + pathPopup;
-    chrome.runtime.sendMessage({
-        type: "setPopup",
-        path: pathPopup,
-    });
-});
-
-// TODO Нужно опрашивать при открытии
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.type === "audioSaved") {
-        clearInterval(interval);
-        if (request.result) {
-            figcaption.textContent = "Success! 🎉";
-        } else {
-            figcaption.textContent = `Fail! 🚨 Error: ${request.statusCode}`;
+    if (request.type === "savingState") {
+        if (request.result === "saved") {
+            let currentUrl = window.location.href;
+            let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
+            let pathPopup = "popup/loading/success.html";
+            window.location.href = rawPath + pathPopup;
+        }
+        if (request.result === "serverError") {
+            let currentUrl = window.location.href;
+            let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
+            let pathPopup = "popup/loading/fail.html";
+            window.location.href = rawPath + pathPopup;
+            document.querySelector(
+                "figcaption"
+            ).textContent = `Error - ${request.responseStatus}`;
+        }
+        if (request.result === "requestError") {
+            let currentUrl = window.location.href;
+            let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
+            let pathPopup = "popup/loading/fail.html";
+            window.location.href = rawPath + pathPopup;
+            document.querySelector("figcaption").textContent =
+                "Can't send request to sever.Please try again";
         }
     }
-    buttonBack.classList.toggle("loaded-state");
-    buttonBack.style.disabled = false;
 });

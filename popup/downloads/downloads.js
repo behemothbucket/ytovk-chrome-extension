@@ -3,6 +3,7 @@ import { createDownloadsStore } from "../../scripts/storage.js";
 
 let buttonBack = document.querySelector(".button_back");
 let buttonDeleteAll = document.querySelector(".button_delete_all");
+let downloads = document.querySelector(".downloads");
 let navButtons = document.querySelector(".nav_buttons");
 
 buttonDeleteAll.addEventListener("click", () => {
@@ -38,16 +39,12 @@ function showDownloads() {
     });
 }
 
-function insertAfter(referenceNode, newNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-}
-
 function showEmptyDownloadsText() {
     let emptyDownloadsTextDiv = document.createElement("div");
     emptyDownloadsTextDiv.classList.add("empty_downloads_wrapper");
     emptyDownloadsTextDiv.innerHTML =
         "<span class='empty_downloads_text'>No downloads</span>";
-    insertAfter(navButtons, emptyDownloadsTextDiv);
+    downloads.appendChild(emptyDownloadsTextDiv);
 }
 
 function renderTracks(downloads) {
@@ -60,7 +57,7 @@ function renderTracks(downloads) {
 		<span class="title">${shortTitle}</span> <br>
 		<span class="artist">${artist}</span>
 	</span>
-	<button data-url=${downloads[artist][shortTitle]} class="button button_download">Download</button>
+	<button data-url="${downloads[artist][shortTitle]}" class="button button_download">Download</button>
 	`;
             insertAfter(navButtons, trackWrapper);
             document
@@ -68,6 +65,10 @@ function renderTracks(downloads) {
                 .addEventListener("click", downloadTrack);
         }
     }
+}
+
+function insertAfter(referenceNode, newNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
 function downloadTrack(event) {

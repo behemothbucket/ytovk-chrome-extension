@@ -7,6 +7,8 @@ chrome.runtime.onInstalled.addListener((details) => {
         checkLoginState();
         createDownloadsStore();
     }
+
+    if (details?.reason === "update") checkLoginState();
 });
 
 chrome.tabs.onUpdated.addListener(handleUrls);

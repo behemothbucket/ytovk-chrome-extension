@@ -28,7 +28,8 @@ let inputArtist = document.getElementById("artist");
                 } else {
                     renderInvalidVideoForm();
                 }
-            });
+            })
+            .catch(() => console.log("Probably popup is closed"));
     }
 })();
 
@@ -62,20 +63,24 @@ buttonSave.addEventListener("click", async () => {
 
     if (totalValidInputs === 3) {
         if (checkYtUrl(inputURL.value)) {
-            chrome.runtime.sendMessage({
-                type: "saveAudioToVK",
-                url: inputURL.value,
-                artist: inputArtist.value,
-                shortTitle: inputTitle.value,
-            });
+            await chrome.runtime
+                .sendMessage({
+                    type: "saveAudioToVK",
+                    url: inputURL.value,
+                    artist: inputArtist.value,
+                    shortTitle: inputTitle.value,
+                })
+                .catch(() => console.log("Probably popup is closed"));
             let currentUrl = window.location.href;
             let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
             let pathPopup = "popup/loading/loading.html";
             window.location.href = rawPath + pathPopup;
-            chrome.runtime.sendMessage({
-                type: "setPopup",
-                path: pathPopup,
-            });
+            await chrome.runtime
+                .sendMessage({
+                    type: "setPopup",
+                    path: pathPopup,
+                })
+                .catch(() => console.log("Probably popup is closed"));
         } else {
             inputURL.style.borderColor = "#cf222e";
             inputURL.classList.add("invalid");
