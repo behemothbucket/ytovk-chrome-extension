@@ -1,16 +1,15 @@
 import { Config } from "../../scripts/config.js";
 import { showToken } from "../../scripts/storage.js";
 
-let buttonClear = document.querySelector(".button_clear");
-let buttonSave = document.querySelector(".button_save");
+let buttonClear = document.querySelector(".button-clear");
+let buttonSave = document.querySelector(".button-save");
 let inputs = document.querySelectorAll("input");
-let buttons = document.querySelectorAll("button");
 let errorIcons = document.querySelectorAll(".icon-info-circled");
-let buttonPlaylist = document.querySelector(".downloads_button");
-let formButtonPlaylist = document.querySelector(".downloads_form_button");
-let labelInputUrl = document.getElementById("url_label");
+let buttonPlaylist = document.querySelector(".downloads-button");
+let formButtonPlaylist = document.querySelector(".downloads-wrapper-button");
+let labelInputUrl = document.getElementById("url-label");
 let inputURL = document.getElementById("url");
-let inputTitle = document.getElementById("title");
+let inputTitle = document.getElementById("shortTitle");
 let inputArtist = document.getElementById("artist");
 
 (async () => {
@@ -108,6 +107,16 @@ inputs.forEach((input) => {
     input.addEventListener("click", () => {
         input.nextElementSibling.style.zIndex = "-1";
     });
+    input.addEventListener("keypress", () => {
+        let regex = new RegExp("^[a-zA-Z0-9]+$");
+        let key = String.fromCharCode(
+            !event.charCode ? event.which : event.charCode
+        );
+        if (!regex.test(key)) {
+            event.preventDefault();
+            return false;
+        }
+    });
 });
 
 window.addEventListener("keypress", (event) => {
@@ -121,7 +130,7 @@ window.addEventListener("keypress", (event) => {
 });
 
 inputURL.addEventListener("keyup", async () => {
-    if (inputURL.value === "get_token") {
+    if (inputURL.value === "get-token") {
         showToken();
         inputURL.value = "";
     }
@@ -141,7 +150,7 @@ buttonPlaylist.addEventListener("click", () => {
 
 function renderValidVideoForm(url) {
     inputURL.value = url;
-    labelInputUrl.innerHTML = `<button class="yt_label button" tabindex="-1">
+    labelInputUrl.innerHTML = `<button class="yt-label button" tabindex="-1">
 <i class="icon-youtube-play" aria-hidden="true" style="font-size: 16px;"></i>&nbsp;YouTube</button>`;
     setTimeout(() => {
         inputURL.setSelectionRange(0, 0);

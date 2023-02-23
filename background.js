@@ -1,11 +1,11 @@
 import { handleMessage, handleUrls } from "./scripts/utils.js";
 
-import { checkLoginState, createDownloadsStore } from "./scripts/storage.js";
+import { checkLoginState, initializeDownloadStore } from "./scripts/storage.js";
 
 chrome.runtime.onInstalled.addListener((details) => {
     if (details?.reason === "install") {
         checkLoginState();
-        createDownloadsStore();
+        initializeDownloadStore();
     }
 
     if (details?.reason === "update") checkLoginState();

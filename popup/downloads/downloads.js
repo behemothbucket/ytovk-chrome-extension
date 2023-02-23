@@ -1,18 +1,17 @@
-import { createDownloadsStore } from "../../scripts/storage.js";
+import { initializeDownloadStore } from "../../scripts/storage.js";
 //TODO Вынести переиспользуемые функции в helpers
 
-let buttonBack = document.querySelector(".button_back");
-let buttonDeleteAll = document.querySelector(".button_delete_all");
-let downloads = document.querySelector(".downloads");
-let navButtons = document.querySelector(".nav_buttons");
+const buttonBack = document.querySelector(".button-back");
+const buttonDeleteAll = document.querySelector(".button-delete-all");
+const downloads = document.querySelector(".downloads");
+const navButtons = document.querySelector(".nav-buttons");
 
 buttonDeleteAll.addEventListener("click", () => {
-    createDownloadsStore();
+    initializeDownloadStore();
     document
-        .querySelectorAll(".track_wrapper")
+        .querySelectorAll(".track-wrapper")
         .forEach((track) => track.remove());
-    if (!document.querySelector(".empty_downloads_wrapper"))
-        showEmptyDownloadsText();
+    showEmptyDownloadsText();
 });
 
 buttonBack.addEventListener("click", () => {
@@ -26,55 +25,74 @@ buttonBack.addEventListener("click", () => {
     });
 });
 
-function showDownloads() {
-    chrome.storage.local.get(["downloads"]).then((result) => {
-        let downloads = result.downloads;
-
-        if (Object.keys(downloads).length === 0 || downloads === undefined) {
-            showEmptyDownloadsText();
-            return;
-        }
-
-        renderTracks(downloads);
-    });
+function getDownloadsFromStorage() {
+    return chrome.storage.local.get(["downloads"]);
 }
 
 function showEmptyDownloadsText() {
     let emptyDownloadsTextDiv = document.createElement("div");
-    emptyDownloadsTextDiv.classList.add("empty_downloads_wrapper");
+    emptyDownloadsTextDiv.classList.add("empty-downloads-wrapper");
     emptyDownloadsTextDiv.innerHTML =
-        "<span class='empty_downloads_text'>No downloads</span>";
+        "<span class='empty-downloads-text'>No downloads</span>";
     downloads.appendChild(emptyDownloadsTextDiv);
 }
 
-function renderTracks(downloads) {
-    for (let artist in downloads) {
-        for (let shortTitle in downloads[artist]) {
-            let trackWrapper = document.createElement("div");
-            trackWrapper.classList.add("track_wrapper");
-            trackWrapper.innerHTML = `
-	<span class="track_info">
-		<span class="title">${shortTitle}</span> <br>
-		<span class="artist">${artist}</span>
-	</span>
-	<button data-url="${downloads[artist][shortTitle]}" class="button button_download">Download</button>
+function renderTracks() {
+    getDownloadsFromStorage().then((storage) => {
+        let downloads = storage.downloads;
+        if (downloads.length !== 0) {
+            for (let track of downloads) {
+                if (track === null) continue;
+                let { artist, shortTitle, url } = track;
+                let trackWrapper = document.createElement("div");
+                trackWrapper.classList.add("track-wrapper");
+
+                trackWrapper.innerHTML = `
+        <span class="track-title">
+		    <span class="shortTitle">${shortTitle}</span> <br>
+		    <span class="artist">${artist}</span>
+	    </span>
+	    <button class="button button-delete-track delete"
+	        data-id="${downloads.indexOf(track)}">Delete</button>
+	    <button data-url="${url}" class="button button-download-track">Download</button>
 	`;
-            insertAfter(navButtons, trackWrapper);
-            document
-                .querySelector(".button_download")
-                .addEventListener("click", downloadTrack);
+                navButtons.parentNode.insertBefore(
+                    trackWrapper,
+                    navButtons.nextSibling
+                );
+                document
+                    .querySelector(".button-download-track")
+                    .addEventListener("click", downloadTrack);
+
+                document
+                    .querySelector(".button-delete-track")
+                    .addEventListener("click", deleteTrack);
+            }
+        } else {
+            showEmptyDownloadsText();
         }
-    }
+    });
 }
 
-function insertAfter(referenceNode, newNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+function deleteTrack(event) {
+    getDownloadsFromStorage().then((storage) => {
+        let downloads = storage.downloads;
+        let id = Number(event.target.dataset.id);
+        downloads[id] = null;
+        event.target.parentNode.remove();
+        chrome.storage.local.set({ downloads });
+
+        if (downloads.every((elem) => elem === null)) {
+            showEmptyDownloadsText();
+            initializeDownloadStore();
+        }
+    });
 }
 
 function downloadTrack(event) {
     let { artist, title, url } = getTrackInfo(event.target);
     let filename = `${artist} - ${title}.mp3`.replace(
-        /[`~!@#$%^&*()_|+=?;:'",<>{}[\]\\/]/gi,
+        /[`~!@#$%^&*_|+=?;:'",<>{}[\]\\/]/gi,
         ""
     );
     chrome.runtime.sendMessage({ type: "downloadTrack", filename, url });
@@ -82,13 +100,9 @@ function downloadTrack(event) {
 
 function getTrackInfo(track) {
     let url = track.dataset.url;
-    let artist = track
-        .querySelector(".track_info")
-        .querySelector(".artist").textContent;
-    let title = track
-        .querySelector(".track_info")
-        .querySelector(".title").textContent;
+    let artist = track.parentNode.querySelector(".artist").textContent;
+    let title = track.parentNode.querySelector(".shortTitle").textContent;
     return { artist, title, url };
 }
 
-showDownloads();
+renderTracks();

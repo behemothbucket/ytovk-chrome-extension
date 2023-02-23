@@ -1,5 +1,5 @@
-let authButton = document.querySelector(".auth_button");
+let authButton = document.querySelector(".auth-button");
 
-authButton.addEventListener("click", async () => {
+authButton.addEventListener("click", () => {
     chrome.runtime.sendMessage({ type: "login" });
 });

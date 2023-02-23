@@ -16,13 +16,7 @@ function showToken() {
 function saveTrack(artist, shortTitle, url) {
     chrome.storage.local.get(["downloads"], (result) => {
         let downloads = result.downloads;
-        if (!downloads[artist]) {
-            downloads[artist] = { [shortTitle]: url };
-        } else {
-            downloads[artist] = Object.assign(downloads[artist], {
-                [shortTitle]: url,
-            });
-        }
+        downloads.push({ artist, shortTitle, url });
         chrome.storage.local.set({ downloads });
     });
 }
@@ -43,8 +37,8 @@ function checkLoginState() {
     });
 }
 
-function createDownloadsStore() {
-    chrome.storage.local.set({ downloads: {} });
+function initializeDownloadStore() {
+    chrome.storage.local.set({ downloads: [] });
 }
 
 export {
@@ -52,5 +46,5 @@ export {
     showToken,
     saveTrack,
     checkLoginState,
-    createDownloadsStore,
+    initializeDownloadStore,
 };

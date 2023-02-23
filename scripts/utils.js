@@ -52,6 +52,9 @@ function setPopup(pathPopup) {
 
 function saveAudioToVK(url, artist, shortTitle) {
     chrome.storage.sync.get(["token"], async (result) => {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), 15000);
+
         const token = result.token;
         const body = JSON.stringify({
             url,
@@ -65,11 +68,13 @@ function saveAudioToVK(url, artist, shortTitle) {
         };
 
         try {
-            const response = await fetch("http://youtovk.ru/save", {
+            const response = await fetch("https://youtovk.ru/save", {
                 method: "POST",
                 body,
                 headers,
+                signal: controller.signal,
             });
+            clearTimeout(id);
             const json = await response.json();
 
             if (response.ok) {
