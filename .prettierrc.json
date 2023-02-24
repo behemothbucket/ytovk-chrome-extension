@@ -4,5 +4,5 @@
     "semi": true,
     "doubleQuote": true,
     "bracketSpacing": true,
-    "max_line_length": 80
+    "max_line_length": 120
 }

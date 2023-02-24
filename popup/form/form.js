@@ -1,5 +1,7 @@
 import { Config } from "../../scripts/config.js";
-import { showToken } from "../../scripts/storage.js";
+import { changePopupAndCurrenLocation } from "../../scripts/location.js";
+
+// TODO: refactor this
 
 let buttonClear = document.querySelector(".button-clear");
 let buttonSave = document.querySelector(".button-save");
@@ -28,7 +30,7 @@ let inputArtist = document.getElementById("artist");
                     renderInvalidVideoForm();
                 }
             })
-            .catch(() => console.log("Probably popup is closed"));
+            .catch((error) => console.error(error));
     }
 })();
 
@@ -43,10 +45,6 @@ buttonClear.addEventListener("click", () => {
     }
 });
 
-// TODO
-// убрать эту огромную логику в отдельную функцию
-// постараться распределить переиспользуемые функции в отдельный модуль
-// а ЛУЧШЕ? сделать все в ООП стиле, и наследовать от главного класса (Page Factory???)
 buttonSave.addEventListener("click", async () => {
     let totalValidInputs = 0;
 
@@ -62,24 +60,13 @@ buttonSave.addEventListener("click", async () => {
 
     if (totalValidInputs === 3) {
         if (checkYtUrl(inputURL.value)) {
-            await chrome.runtime
-                .sendMessage({
-                    type: "saveAudioToVK",
-                    url: inputURL.value,
-                    artist: inputArtist.value,
-                    shortTitle: inputTitle.value,
-                })
-                .catch(() => console.log("Probably popup is closed"));
-            let currentUrl = window.location.href;
-            let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
-            let pathPopup = "popup/loading/loading.html";
-            window.location.href = rawPath + pathPopup;
-            await chrome.runtime
-                .sendMessage({
-                    type: "setPopup",
-                    path: pathPopup,
-                })
-                .catch(() => console.log("Probably popup is closed"));
+            await chrome.runtime.sendMessage({
+                type: "saveAudioToVK",
+                url: inputURL.value,
+                artist: inputArtist.value,
+                shortTitle: inputTitle.value,
+            });
+            changePopupAndCurrenLocation("loading");
         } else {
             inputURL.style.borderColor = "#cf222e";
             inputURL.classList.add("invalid");
@@ -88,64 +75,30 @@ buttonSave.addEventListener("click", async () => {
     }
 });
 
-function disableErrorIcons() {
-    errorIcons.forEach((icon) => {
-        icon.style.zIndex = "-1";
-    });
-}
-
 inputs.forEach((input) => {
-    input.addEventListener("input", () => {
-        if (input.value) {
-            input.style.borderColor = "#d1d5da";
-            input.classList.remove("invalid");
+    input.addEventListener("input", function () {
+        if (this.value) {
+            this.style.borderColor = "#d1d5da";
+            this.classList.remove("invalid");
         } else {
-            input.style.borderColor = "#cf222e";
-            input.classList.add("invalid");
+            this.style.borderColor = "#cf222e";
+            this.classList.add("invalid");
         }
     });
-    input.addEventListener("click", () => {
-        input.nextElementSibling.style.zIndex = "-1";
+    input.addEventListener("click", function () {
+        this.nextElementSibling.style.zIndex = "-1";
     });
-    input.addEventListener("keypress", () => {
-        let regex = new RegExp("^[a-zA-Z0-9]+$");
-        let key = String.fromCharCode(
-            !event.charCode ? event.which : event.charCode
-        );
-        if (!regex.test(key)) {
+    input.addEventListener("keypress", (event) => {
+        let regex = new RegExp("^[a-zA-Z0-9()]+$");
+        if (!regex.test(event.key)) {
             event.preventDefault();
             return false;
         }
     });
 });
 
-window.addEventListener("keypress", (event) => {
-    if (event.key === "Enter") {
-        event.target.classList.add("active");
-        event.target.click();
-        setTimeout(() => {
-            event.target.classList.remove("active");
-        }, 100);
-    }
-});
-
-inputURL.addEventListener("keyup", async () => {
-    if (inputURL.value === "get-token") {
-        showToken();
-        inputURL.value = "";
-    }
-});
-
-// TODO Вынести setPopup в utils, message не нужен
 buttonPlaylist.addEventListener("click", () => {
-    let currentUrl = window.location.href;
-    let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
-    let pathPopup = "popup/downloads/downloads.html";
-    window.location.href = rawPath + pathPopup;
-    chrome.runtime.sendMessage({
-        type: "setPopup",
-        path: pathPopup,
-    });
+    changePopupAndCurrenLocation("downloads");
 });
 
 function renderValidVideoForm(url) {
@@ -164,7 +117,13 @@ function renderValidVideoForm(url) {
 function renderInvalidVideoForm() {
     let form = document.querySelector(".form");
     form.innerHTML =
-        "<strong style='color: #000';><span style='font-weight: 600;color: inherit;vertical-align: center;'>⚠️ Warning</span></div><br><br>Video length <= 6min 0s<br>NO Stream<br><br>Slow server :(</strong>";
+        "<strong style='color: #000'><span style='font-weight: 600;color: inherit;vertical-align: center;'>⚠️ Warning</span></div><br><br>Video length <= 6min 0s<br>NO Stream<br><br>Slow server :(</strong>";
     buttonPlaylist.style.marginTop = "10px";
     form.appendChild(formButtonPlaylist);
+}
+
+function disableErrorIcons() {
+    errorIcons.forEach((icon) => {
+        icon.style.zIndex = "-1";
+    });
 }

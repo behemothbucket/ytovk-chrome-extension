@@ -1,5 +1,8 @@
-import { initializeDownloadStore } from "../../scripts/storage.js";
-//TODO Вынести переиспользуемые функции в helpers
+import {
+    getStorageDownloads,
+    initializeDownloadStore,
+} from "../../scripts/storage.js";
+import { changePopupAndCurrenLocation } from "../../scripts/location.js";
 
 const buttonBack = document.querySelector(".button-back");
 const buttonDeleteAll = document.querySelector(".button-delete-all");
@@ -15,30 +18,11 @@ buttonDeleteAll.addEventListener("click", () => {
 });
 
 buttonBack.addEventListener("click", () => {
-    let currentUrl = window.location.href;
-    let rawPath = currentUrl.substring(0, currentUrl.indexOf("popup"));
-    let pathPopup = "popup/form/form.html";
-    window.location.href = rawPath + pathPopup;
-    chrome.runtime.sendMessage({
-        type: "setPopup",
-        path: pathPopup,
-    });
+    changePopupAndCurrenLocation("form");
 });
 
-function getDownloadsFromStorage() {
-    return chrome.storage.local.get(["downloads"]);
-}
-
-function showEmptyDownloadsText() {
-    let emptyDownloadsTextDiv = document.createElement("div");
-    emptyDownloadsTextDiv.classList.add("empty-downloads-wrapper");
-    emptyDownloadsTextDiv.innerHTML =
-        "<span class='empty-downloads-text'>No downloads</span>";
-    downloads.appendChild(emptyDownloadsTextDiv);
-}
-
 function renderTracks() {
-    getDownloadsFromStorage().then((storage) => {
+    getStorageDownloads().then((storage) => {
         let downloads = storage.downloads;
         if (downloads.length !== 0) {
             for (let track of downloads) {
@@ -75,18 +59,27 @@ function renderTracks() {
 }
 
 function deleteTrack(event) {
-    getDownloadsFromStorage().then((storage) => {
-        let downloads = storage.downloads;
+    getStorageDownloads().then((result) => {
+        let downloads = result.downloads;
         let id = Number(event.target.dataset.id);
-        downloads[id] = null;
         event.target.parentNode.remove();
-        chrome.storage.local.set({ downloads });
+        downloads.splice(id, 1);
 
-        if (downloads.every((elem) => elem === null)) {
+        if (downloads.length === 0) {
             showEmptyDownloadsText();
             initializeDownloadStore();
+        } else {
+            chrome.storage.local.set({ downloads });
         }
     });
+}
+
+function showEmptyDownloadsText() {
+    let emptyDownloadsTextDiv = document.createElement("div");
+    emptyDownloadsTextDiv.classList.add("empty-downloads-wrapper");
+    emptyDownloadsTextDiv.innerHTML =
+        "<span class='empty-downloads-text'>No downloads</span>";
+    downloads.appendChild(emptyDownloadsTextDiv);
 }
 
 function downloadTrack(event) {

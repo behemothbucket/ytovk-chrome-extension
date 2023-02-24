@@ -1,4 +1,4 @@
-import { setPopup } from "./utils.js";
+import { setPopup } from "./location.js";
 
 function setToken(url) {
     const options = {};
@@ -7,13 +7,15 @@ function setToken(url) {
     checkLoginState();
 }
 
-function showToken() {
-    chrome.storage.sync.get(["token"], (res) => {
-        alert(res.token);
-    });
+function getToken() {
+    return chrome.storage.sync.get(["token"]);
 }
 
-function saveTrack(artist, shortTitle, url) {
+function getStorageDownloads() {
+    return chrome.storage.local.get(["downloads"]);
+}
+
+function saveTrackToDownloads(artist, shortTitle, url) {
     chrome.storage.local.get(["downloads"], (result) => {
         let downloads = result.downloads;
         downloads.push({ artist, shortTitle, url });
@@ -43,8 +45,9 @@ function initializeDownloadStore() {
 
 export {
     setToken,
-    showToken,
-    saveTrack,
+    getToken,
+    getStorageDownloads,
+    saveTrackToDownloads,
     checkLoginState,
     initializeDownloadStore,
 };

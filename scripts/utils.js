@@ -1,6 +1,6 @@
 import { Config } from "./config.js";
-import { setToken } from "./storage.js";
-import { saveTrack } from "./storage.js";
+import { getToken, setToken } from "./storage.js";
+import { saveTrackToDownloads } from "./storage.js";
 
 function handleUrls(tabId, changeInfo, tab) {
     if (tab.url.match(Config.OAUTH_TOKEN_PAGE_PATTERN) && changeInfo.url) {
@@ -17,9 +17,6 @@ function handleMessage(request, sender, sendResponse) {
             active: true,
         });
     }
-
-    if (request.type === "setPopup")
-        chrome.action.setPopup({ popup: request.path });
 
     if (request.type === "setBadge") {
         chrome.action.setBadgeText({
@@ -42,64 +39,41 @@ function handleMessage(request, sender, sendResponse) {
             url: request.url,
         });
     }
-
-    // return true;
 }
 
-function setPopup(pathPopup) {
-    chrome.action.setPopup({ popup: pathPopup });
-}
+async function saveAudioToVK(url, artist, shortTitle) {
+    const tokenObject = await getToken();
+    const token = tokenObject.token;
 
-function saveAudioToVK(url, artist, shortTitle) {
-    chrome.storage.sync.get(["token"], async (result) => {
-        const controller = new AbortController();
-        const id = setTimeout(() => controller.abort(), 15000);
-
-        const token = result.token;
-        const body = JSON.stringify({
-            url,
-            token,
-            artist,
-            shortTitle,
-        });
-        const headers = {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-        };
-
-        try {
-            const response = await fetch("https://youtovk.ru/save", {
-                method: "POST",
-                body,
-                headers,
-                signal: controller.signal,
-            });
-            clearTimeout(id);
-            const json = await response.json();
-
-            if (response.ok) {
-                saveTrack(artist, shortTitle, json.url);
-                setPopup("../popup/loading/success.html");
-                sendSavingResult("saved", "200");
-            } else {
-                setPopup("../popup/loading/fail.html");
-                sendSavingResult("serverError", response.status);
-            }
-        } catch (error) {
-            setPopup("../popup/loading/fail.html");
-            sendSavingResult("requestError", "");
-        }
+    const body = JSON.stringify({
+        url,
+        token,
+        artist,
+        shortTitle,
     });
+
+    const headers = {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+    };
+
+    try {
+        const response = await fetch("https://youtovk1.ru/save", {
+            method: "POST",
+            body,
+            headers,
+        });
+        const json = await response.json();
+
+        if (response.ok) {
+            saveTrackToDownloads(artist, shortTitle, json.url);
+            await chrome.runtime.sendMessage({ type: "audioSaved" });
+        } else {
+            console.log(`Error: code ${response.status}`);
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
 }
 
-function sendSavingResult(result, responseStatus) {
-    chrome.runtime
-        .sendMessage({
-            type: "savingState",
-            result,
-            responseStatus,
-        })
-        .catch(() => console.log("Probably popup is closed"));
-}
-
-export { handleMessage, handleUrls, setPopup };
+export { handleMessage, handleUrls };
