@@ -15,7 +15,7 @@ function isNotValidVideo() {
 	return document.querySelector(".ytp-live-badge").checkVisibility() || hours > 0 || minutes >= 6;
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
 	if (request.type === "validateVideo") {
 		if (isNotValidVideo()) {
 			sendResponse({ valid: false });

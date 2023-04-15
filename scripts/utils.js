@@ -10,7 +10,7 @@ function handleUrls(tabId, changeInfo, tab) {
     return true;
 }
 
-function handleMessage(request, sender, sendResponse) {
+function handleMessage(request, sender) {
     if (request.type === "login") {
         chrome.tabs.create({
             url: Config.OAUTH_URL,

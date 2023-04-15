@@ -1,37 +1,51 @@
 {
-    "default_locale": "en",
-    "description": "__MSG_description__",
-    "name": "__MSG_name__",
-    "manifest_version": 3,
-    "version": "2.5.1",
-    "author": "foldersjarer@gmail.com",
-    "icons": {
-        "16": "img/icon_active_16.png",
-        "32": "img/icon_active_32.png",
-        "48": "img/icon_active_48.png",
-        "128": "img/icon_active_128.png"
-    },
-    "action": {
-        "default_icon": "img/icon_disabled.png",
-        "default_title": "Zzz... 🐝"
-    },
-    "content_scripts": [
-        {
-            "matches": ["https://*.youtube.com/*"],
-            "run_at": "document_start",
-            "js": ["scripts/content.js"]
-        }
-    ],
-    "background": {
-        "service_worker": "background.js",
-        "type": "module"
-    },
-    "permissions": ["tabs", "storage", "downloads"],
-    "host_permissions": ["<all_urls>"],
-    "web_accessible_resources": [
-        {
-            "resources": ["scripts/content.js"],
-            "matches": ["<all_urls>"]
-        }
-    ]
+  "default_locale": "en",
+  "description": "__MSG_description__",
+  "name": "__MSG_name__",
+  "manifest_version": 3,
+  "version": "2.5.1",
+  "author": "foldersjarer@gmail.com",
+  "icons": {
+    "16": "img/icon_active_16.png",
+    "32": "img/icon_active_32.png",
+    "48": "img/icon_active_48.png",
+    "128": "img/icon_active_128.png"
+  },
+  "action": {
+    "default_icon": "img/icon_disabled.png",
+    "default_title": "Zzz... 🐝"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.youtube.com/*"
+      ],
+      "run_at": "document_start",
+      "js": [
+        "scripts/content.js"
+      ]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "downloads"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "scripts/content.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
 }
