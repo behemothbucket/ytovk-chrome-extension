@@ -1,10 +1,10 @@
 {
-    "name": {
-        "message": "YToVK",
-        "description": "extension name"
-    },
-    "description": {
-        "message": "Download video from YouTube and save to VK audios",
-        "description": "extension description"
-    }
+  "name": {
+    "message": "YToVK",
+    "description": "extension name"
+  },
+  "description": {
+    "message": "Download video from YouTube and save to VK audios",
+    "description": "extension description"
+  }
 }
