@@ -7,7 +7,7 @@ function changePopupAndCurrenLocation(folder, popupHtml = folder) {
 }
 
 function setPopup(path) {
-    chrome.action.setPopup({ popup: path })
+    chrome.action.setPopup({ popup: path });
 }
 
 export { changePopupAndCurrenLocation, setPopup };
